@@ -449,7 +449,8 @@
                 workspace_owner: currentState.workspace_owner,
                 workspace_name: currentState.workspace_name,
                 workspace_title: currentState.workspace_title,
-                view: 'workspace'
+                view: 'workspace',
+                params: currentState.params
             };
         }
 

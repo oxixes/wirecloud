@@ -148,11 +148,11 @@
             return result;
         }
 
-        adaptColumnOffset(size) {
+        adaptColumnOffset(size, width) {
             if (this.vertical) {
                 return new Wirecloud.ui.MultiValuedSize(0, 0);
             } else {
-                return super.adaptColumnOffset(size);
+                return super.adaptColumnOffset(size, width);
             }
         }
 
@@ -172,11 +172,11 @@
             }
         }
 
-        adaptWidth(size) {
+        adaptWidth(size, width) {
             if (this.vertical) {
-                return new Wirecloud.ui.MultiValuedSize(this.getWidth(), 1);
+                return new Wirecloud.ui.MultiValuedSize(width || this.getWidth(), 1);
             } else {
-                return super.adaptWidth(size);
+                return super.adaptWidth(size, width);
             }
         }
 

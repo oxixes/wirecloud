@@ -126,7 +126,7 @@
             }
         }
 
-        adaptColumnOffset(pixels) {
+        adaptColumnOffset(pixels, width) {
             const msg = utils.interpolate(
                 "method \"%(method)s\" must be implemented.",
                 {method: "adaptColumnOffset"},
@@ -162,7 +162,7 @@
             return new Wirecloud.ui.MultiValuedSize(this.getHeightInPixels(sizeInLU), sizeInLU);
         }
 
-        adaptWidth(size) {
+        adaptWidth(size, width) {
             let pixels, sizeInLU;
 
             const parsedSize = this.parseSize(size);
@@ -170,14 +170,14 @@
                 sizeInLU = Math.round(parsedSize[0]);
             } else {
                 if (parsedSize[1] === '%') {
-                    pixels = Math.round((parsedSize[0] * this.getWidth()) / 100);
+                    pixels = Math.round((parsedSize[0] * (width || this.getWidth())) / 100);
                 } else {
                     pixels = this.padWidth(parsedSize[0]);
                 }
-                sizeInLU = Math.round(this.fromPixelsToHCells(pixels));
+                sizeInLU = Math.round(this.fromPixelsToHCells(pixels, width));
             }
             sizeInLU = Math.max(1, sizeInLU);
-            return new Wirecloud.ui.MultiValuedSize(this.getWidthInPixels(sizeInLU), sizeInLU);
+            return new Wirecloud.ui.MultiValuedSize(this.getWidthInPixels(sizeInLU, width), sizeInLU);
         }
 
         updatePosition(widget, element) {

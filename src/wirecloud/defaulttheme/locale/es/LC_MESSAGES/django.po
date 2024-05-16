@@ -117,7 +117,7 @@ msgstr "Contraseña"
 
 #: templates/registration/login.html:48 templates/wirecloud/signin.html:3
 msgid "Sign in"
-msgstr "Iniciar sessión"
+msgstr "Iniciar sesión"
 
 #: templates/wirecloud/catalogue/main_resource_details.html:3
 msgid "Description"

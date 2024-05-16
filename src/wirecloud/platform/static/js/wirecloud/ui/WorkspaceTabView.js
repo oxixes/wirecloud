@@ -56,6 +56,20 @@
         return widgets;
     };
 
+    const get_layout_configs = function get_layout_configs(widget) {
+        const layoutConfigs = [];
+
+        widget.layoutConfigurations.forEach(function (layoutConfig) {
+            layoutConfigs.push({
+                id: layoutConfig.id,
+                moreOrEqual: layoutConfig.moreOrEqual,
+                lessOrEqual: layoutConfig.lessOrEqual
+            });
+        });
+
+        return layoutConfigs;
+    }
+
     // =========================================================================
     // EVENT HANDLERS
     // =========================================================================
@@ -110,6 +124,16 @@
         this.prefbutton.enabled = this.workspace.editing;
     };
 
+    const on_windowresize = function on_windowresize() {
+        this.dragboard.resetLayouts();
+        this.widgets.forEach((widget) => {
+            widget.updateWindowSize(window.innerWidth);
+        });
+
+        this.dragboard.refreshPositionBasedOnZIndex();
+        this.dragboard.paint();
+    };
+
     ns.WorkspaceTabView = class WorkspaceTabView extends se.Tab {
 
         constructor(id, notebook, options) {
@@ -126,7 +150,8 @@
                 on_changetab: on_changetab.bind(this),
                 on_addwidget: on_addwidget.bind(this),
                 on_removetab: on_removetab.bind(this),
-                on_removewidget: on_removewidget.bind(this)
+                on_removewidget: on_removewidget.bind(this),
+                on_windowresize: on_windowresize.bind(this)
             };
             privates.set(this, priv);
 
@@ -236,6 +261,7 @@
             this.model.addEventListener('addwidget', priv.on_addwidget);
             this.model.addEventListener('remove', priv.on_removetab);
             this.model.addEventListener('removewidget', priv.on_removewidget);
+            window.addEventListener('resize', priv.on_windowresize.bind(this));
         }
 
         /**
@@ -246,63 +272,93 @@
          * resolved, or an Error if rejected.
          */
         createWidget(resource, options) {
+            let layoutConfigs = []
+            if (this.widgets.length > 0) {
+                // All widgets SHOULD have the same layout configuration sizes. If
+                // this is not the case something has gonw wrong or manual modifications
+                // have been made to the layout configurations, but we will use the first
+                // widget as reference.
+                layoutConfigs = get_layout_configs(this.widgets[0].model);
+            } else {
+                // TODO Adrian this should come from the UI defined sizes, which are not yet available
+                layoutConfigs.push({
+                    id: 0,
+                    moreOrEqual: 0,
+                    lessOrEqual: -1
+                });
+            }
+
             options = utils.merge({
                 commit: true,
-                height: resource.default_height,
-                layout: this.model.preferences.get('initiallayout') === "Free" ? 1 : 0,
-                width: resource.default_width,
-                anchor: 'top-left',
-                relx: true,
-                rely: false,
-                relwidth: true,
-                relheight: false
+                layout: this.model.preferences.get('initiallayout') === "Free" ? 1 : 0
             }, options);
 
-            const layouts = [
-                this.dragboard.baseLayout,
-                this.dragboard.freeLayout,
-                this.dragboard.leftLayout,
-                this.dragboard.rightLayout
-            ];
-            const layout = layouts[options.layout];
+            layoutConfigs.forEach((layoutConfig) => {
+                Wirecloud.Utils.merge(layoutConfig, {
+                    action: 'update',
+                    width: resource.default_width,
+                    anchor: 'top-left',
+                    relx: true,
+                    rely: false,
+                    relwidth: true,
+                    relheight: false,
+                    height: resource.default_height
+                });
 
-            if (options.left != null) {
-                if (layout !== this.dragboard.freeLayout || options.relx) {
-                    options.left = layout.adaptColumnOffset(options.left).inLU;
-                } else {
-                    options.left = layout.adaptColumnOffset(options.left).inPixels;
+                let avgScreenSize = layoutConfig.lessOrEqual + (layoutConfig.moreOrEqual - layoutConfig.lessOrEqual) / 2;
+                if (layoutConfig.lessOrEqual === -1) {
+                    avgScreenSize = layoutConfig.moreOrEqual;
                 }
-            }
-            if (options.top != null) {
-                if (layout !== this.dragboard.freeLayout || options.rely) {
-                    options.top = layout.adaptRowOffset(options.top).inLU;
-                } else {
-                    options.top = layout.adaptRowOffset(options.top).inPixels;
-                }
-            }
-            if (layout !== this.dragboard.freeLayout || options.relheight) {
-                options.height = clean_number(layout.adaptHeight(options.height).inLU, 1);
-            } else {
-                options.height = clean_number(layout.adaptHeight(options.height).inPixels, 1);
-            }
-            if (layout !== this.dragboard.freeLayout || options.relwidth) {
-                options.width = clean_number(layout.adaptWidth(options.width).inLU, 1, layout.columns);
-            } else {
-                options.width = clean_number(layout.adaptWidth(options.width).inPixels, 1);
-            }
 
-            if (options.left == null || options.top == null) {
-                if (options.refposition && "searchBestPosition" in layout) {
-                    layout.searchBestPosition(options);
-                } else if ("_searchFreeSpace" in layout) {
-                    const position = layout._searchFreeSpace(options.width, options.height);
-                    options.left = position.x;
-                    options.top = position.y;
-                } else {
-                    options.left = 0;
-                    options.top = 0;
+                const layouts = [
+                    this.dragboard.baseLayout,
+                    this.dragboard.freeLayout,
+                    this.dragboard.leftLayout,
+                    this.dragboard.rightLayout
+                ];
+                const layout = layouts[options.layout];
+
+                if (layoutConfig.left != null) {
+                    if (layout !== this.dragboard.freeLayout || layoutConfig.relx) {
+                        layoutConfig.left = layout.adaptColumnOffset(layoutConfig.left, avgScreenSize).inLU;
+                    } else {
+                        layoutConfig.left = layout.adaptColumnOffset(layoutConfig.left, avgScreenSize).inPixels;
+                    }
                 }
-            }
+                if (layoutConfig.top != null) {
+                    if (layout !== this.dragboard.freeLayout || layoutConfig.rely) {
+                        layoutConfig.top = layout.adaptRowOffset(layoutConfig.top).inLU;
+                    } else {
+                        layoutConfig.top = layout.adaptRowOffset(layoutConfig.top).inPixels;
+                    }
+                }
+                if (layout !== this.dragboard.freeLayout || layoutConfig.relheight) {
+                    layoutConfig.height = clean_number(layout.adaptHeight(layoutConfig.height).inLU, 1);
+                } else {
+                    layoutConfig.height = clean_number(layout.adaptHeight(layoutConfig.height).inPixels, 1);
+                }
+                if (layout !== this.dragboard.freeLayout || layoutConfig.relwidth) {
+                    layoutConfig.width = clean_number(layout.adaptWidth(layoutConfig.width, avgScreenSize).inLU, 1, layout.columns);
+                } else {
+                    layoutConfig.width = clean_number(layout.adaptWidth(layoutConfig.width, avgScreenSize).inPixels, 1);
+                }
+
+                if (layoutConfig.left == null || layoutConfig.top == null) {
+                    if (layoutConfig.refposition && "searchBestPosition" in layout) {
+                        layout.searchBestPosition(layoutConfig, avgScreenSize);
+                    } else if ("_searchFreeSpace2" in layout) {
+                        const matrix = Wirecloud.Utils.getLayoutMatrix(layout, layout.dragboard.widgets, avgScreenSize);
+                        const position = layout._searchFreeSpace2(layoutConfig.width, layoutConfig.height, matrix);
+                        layoutConfig.left = position.x;
+                        layoutConfig.top = position.y;
+                    } else {
+                        layoutConfig.left = 0;
+                        layoutConfig.top = 0;
+                    }
+                }
+            });
+
+            options.layoutConfigurations = layoutConfigs;
 
             if (!options.commit) {
                 return this.findWidget(this.model.createWidget(resource, options).id);

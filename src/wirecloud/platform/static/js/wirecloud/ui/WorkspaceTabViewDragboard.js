@@ -37,7 +37,7 @@
         this.widgets.forEach((widget, index) => {
             widget.setPosition({
                 z: index
-            });
+            }, false);
         });
     };
 
@@ -189,6 +189,14 @@
             return this;
         }
 
+        refreshPositionBasedOnZIndex() {
+            // Reorder widgets based on their z-index. This is used when the screen size changes
+            // and the widgets are not in the correct order.
+            this.widgets.sort((a, b) => {
+                return a.position.z - b.position.z;
+            });
+        }
+
         paint() {
 
             if (this.painted) {
@@ -210,10 +218,21 @@
             this.painted = true;
         }
 
+        resetLayouts() {
+            this.painted = false;
+            this.fulldragboardLayout = new Wirecloud.ui.FullDragboardLayout(this);
+            this.baseLayout = this._buildLayoutFromPreferences();
+            this.freeLayout = new Wirecloud.ui.FreeLayout(this);
+            this.leftLayout = new Wirecloud.ui.SidebarLayout(this);
+            this.rightLayout = new Wirecloud.ui.SidebarLayout(this, {position: "right"});
+            this.bottomLayout = new Wirecloud.ui.SidebarLayout(this, {position: "bottom"});
+            this.topLayout = new Wirecloud.ui.SidebarLayout(this, {position: "top"});
+        }
+
         /**
          *
          */
-        update(ids) {
+        update(ids, allLayoutConfigurations) {
             if (this.tab.workspace.editing === false) {
                 return Promise.resolve(this);
             }
@@ -233,11 +252,18 @@
                 return Promise.resolve(this);
             }
 
+            // We convert the content to JSON
+            const JSONcontent = content.map((widget) => {
+                return widget.toJSON('update', allLayoutConfigurations);
+            });
+
+            console.log('Updating widgets:', content);
+
             return Wirecloud.io.makeRequest(url, {
                 method: 'PUT',
                 requestHeaders: {'Accept': 'application/json'},
                 contentType: 'application/json',
-                postBody: JSON.stringify(content)
+                postBody: JSON.stringify(JSONcontent)
             }).then((response) => {
                 if ([204, 401, 403, 404, 500].indexOf(response.status) === -1) {
                     return Promise.reject(utils.gettext("Unexpected response from server"));
@@ -277,8 +303,9 @@
             newBaseLayout.initialize();
 
             // Change our base layout
-            this.baseLayout.moveTo(newBaseLayout);
+            const oldBaseLayout = this.baseLayout;
             this.baseLayout = newBaseLayout;
+            oldBaseLayout.moveTo(newBaseLayout);
         }
 
         _addWidget(widget) {

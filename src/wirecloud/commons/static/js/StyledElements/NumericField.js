@@ -82,6 +82,9 @@
                 'max': Number.POSITIVE_INFINITY,
                 'inc': 1
             };
+
+            options = utils.merge({}, defaultOptions, options);
+
             options.min = Number(options.min);
             options.max = Number(options.max);
             options.inc = Number(options.inc);
@@ -89,12 +92,20 @@
 
             super(options.initialValue, ['change', 'focus', 'blur']);
 
-            this.options = options = utils.merge({}, defaultOptions, options);
+            this.options = options;
 
             this.wrapperElement = document.createElement("div");
             this.wrapperElement.className = "se-numeric-field";
             this.inputElement = document.createElement("input");
-            this.inputElement.setAttribute("type", "text");
+            this.inputElement.setAttribute("type", "number");
+            this.inputElement.setAttribute("step", options.inc);
+            if (options.min !== Number.NEGATIVE_INFINITY) {
+                this.inputElement.setAttribute("min", options.min);
+            }
+
+            if (options.max !== Number.POSITIVE_INFINITY) {
+                this.inputElement.setAttribute("max", options.max);
+            }
 
             if (options.name != null) {
                 this.inputElement.setAttribute("name", options.name);
@@ -106,19 +117,16 @@
 
             this.inputElement.setAttribute("value", options.initialValue);
 
-            const topButton = new StyledElements.Button({'class': 'se-numeric-field-top-button', iconClass: 'fas fa-caret-up'});
-            const bottomButton = new StyledElements.Button({'class': 'se-numeric-field-bottom-button', iconClass: 'fas fa-caret-down'});
-
             /* Internal events */
-            topButton.addEventListener("click", update.bind(this, options.inc));
-            bottomButton.addEventListener("click", update.bind(this, -options.inc));
             this.inputElement.addEventListener("focus", onfocus.bind(this), true);
             this.inputElement.addEventListener("blur", onblur.bind(this), true);
             this.inputElement.addEventListener("keydown", utils.stopInputKeydownPropagationListener, false);
 
+            this.inputElement.addEventListener("change", (e) => {
+                this.dispatchEvent('change', e);
+            });
+
             this.wrapperElement.appendChild(this.inputElement);
-            topButton.insertInto(this.wrapperElement);
-            bottomButton.insertInto(this.wrapperElement);
         }
 
         getValue() {

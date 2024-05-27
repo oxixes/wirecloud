@@ -57,15 +57,9 @@
             // TODO or initialized with the scroll bar's real with?
             this.dragboardWidth = 800;
             this.dragboardHeight = 600;
+            this.customWidth = -1;
             this.widgetToMove = null;
-            this.painted = false;
-            this.fulldragboardLayout = new Wirecloud.ui.FullDragboardLayout(this);
-            this.baseLayout = this._buildLayoutFromPreferences();
-            this.freeLayout = new Wirecloud.ui.FreeLayout(this);
-            this.leftLayout = new Wirecloud.ui.SidebarLayout(this);
-            this.rightLayout = new Wirecloud.ui.SidebarLayout(this, {position: "right"});
-            this.bottomLayout = new Wirecloud.ui.SidebarLayout(this, {position: "bottom"});
-            this.topLayout = new Wirecloud.ui.SidebarLayout(this, {position: "top"});
+            this.resetLayouts();
             Object.defineProperties(this, {
                 layouts: {
                     get: () => {
@@ -229,6 +223,15 @@
             this.topLayout = new Wirecloud.ui.SidebarLayout(this, {position: "top"});
         }
 
+        updateWidgetScreenSize(screenSize) {
+            this.resetLayouts();
+            this.widgets.forEach((widget) => {
+                widget.updateWindowSize(screenSize);
+            });
+            this.refreshPositionBasedOnZIndex();
+            this.paint();
+        }
+
         /**
          *
          */
@@ -256,8 +259,6 @@
             const JSONcontent = content.map((widget) => {
                 return widget.toJSON('update', allLayoutConfigurations);
             });
-
-            console.log('Updating widgets:', content);
 
             return Wirecloud.io.makeRequest(url, {
                 method: 'PUT',
@@ -294,7 +295,7 @@
         }
 
         /**
-         * TODO, used by WorkspaceTabView to when the user changes the preferences
+         * Used by WorkspaceTabView to when the user changes the preferences
          * for the base layout.
          */
         _updateBaseLayout() {
@@ -306,6 +307,136 @@
             const oldBaseLayout = this.baseLayout;
             this.baseLayout = newBaseLayout;
             oldBaseLayout.moveTo(newBaseLayout);
+        }
+
+        /**
+         * Used by WorkspaceTabView to when the user changes the preferences
+         * for the screen sizes.
+         */
+        _updateScreenSizes() {
+            if (this.customWidth !== -1) {
+                this.tab.quitEditingInterval();
+            }
+
+            const updatedScreenSizes = this.tab.model.preferences.get('screenSizes');
+            const reqData = [];
+
+            this.resetLayouts();
+            this.widgets.forEach((widget) => {
+                const currentConfigs = widget.model.layoutConfigurations;
+
+                const widgetReqData = {
+                    id: widget.model.id,
+                    layoutConfigurations: []
+                };
+
+                const indexesToDelete = [];
+                currentConfigs.forEach((config, i) => {
+                    if (updatedScreenSizes.findIndex((screenSize) => screenSize.id === config.id) === -1) {
+                        widgetReqData.layoutConfigurations.push({
+                            id: config.id,
+                            action: 'delete'
+                        });
+                        indexesToDelete.push(i);
+                    }
+                });
+
+                indexesToDelete.sort((a, b) => b - a);
+                indexesToDelete.forEach((index) => {
+                    currentConfigs.splice(index, 1);
+                });
+
+                const lastExistingScreenSize = currentConfigs[currentConfigs.length - 1];
+                updatedScreenSizes.forEach((screenSize) => {
+                    const currentConfig = currentConfigs.find((config) => config.id === screenSize.id);
+                    if (!currentConfig) {
+                        const newConfig = {
+                            id: screenSize.id,
+                            anchor: lastExistingScreenSize.anchor,
+                            width: lastExistingScreenSize.width,
+                            height: lastExistingScreenSize.height,
+                            relwidth: lastExistingScreenSize.relwidth,
+                            relheight: lastExistingScreenSize.relheight,
+                            left: lastExistingScreenSize.left,
+                            top: lastExistingScreenSize.top,
+                            zIndex: lastExistingScreenSize.zIndex,
+                            relx: lastExistingScreenSize.relx,
+                            rely: lastExistingScreenSize.rely,
+                            titlevisible: lastExistingScreenSize.titlevisible,
+                            fulldragboard: lastExistingScreenSize.fulldragboard,
+                            minimized: lastExistingScreenSize.minimized,
+                            moreOrEqual: screenSize.moreOrEqual,
+                            lessOrEqual: screenSize.lessOrEqual
+                        };
+
+                        currentConfigs.push(newConfig);
+
+                        const reqNewConfig = utils.clone(newConfig);
+                        reqNewConfig.action = 'update';
+
+                        widgetReqData.layoutConfigurations.push(reqNewConfig);
+                    } else {
+                        let requiresUpdate = false;
+                        const updatedConfig = {
+                            id: screenSize.id,
+                            action: 'update'
+                        };
+
+                        if (currentConfig.moreOrEqual !== screenSize.moreOrEqual) {
+                            updatedConfig.moreOrEqual = currentConfig.moreOrEqual = screenSize.moreOrEqual;
+                            requiresUpdate = true;
+                        }
+
+                        if (currentConfig.lessOrEqual !== screenSize.lessOrEqual) {
+                            updatedConfig.lessOrEqual = currentConfig.lessOrEqual = screenSize.lessOrEqual;
+                            requiresUpdate = true;
+                        }
+
+                        if (requiresUpdate) {
+                            widgetReqData.layoutConfigurations.push(updatedConfig);
+                        }
+                    }
+                });
+
+                // After modifying all the layoutConfigurations, we need to sort them by moreOrEqual and call the updateWindowSize method
+                // to refresh the current layout
+                currentConfigs.sort((a, b) => a.moreOrEqual - b.moreOrEqual);
+                widget.updateWindowSize(window.innerWidth);
+
+                reqData.push(widgetReqData);
+            });
+            this.refreshPositionBasedOnZIndex();
+            this.paint();
+
+            const url = Wirecloud.URLs.IWIDGET_COLLECTION.evaluate({
+                workspace_id: this.tab.workspace.model.id,
+                tab_id: this.tab.model.id
+            });
+
+            return Wirecloud.io.makeRequest(url, {
+                method: 'PUT',
+                requestHeaders: {'Accept': 'application/json'},
+                contentType: 'application/json',
+                postBody: JSON.stringify(reqData)
+            }).then((response) => {
+                if ([204, 401, 403, 404, 500].indexOf(response.status) === -1) {
+                    return Promise.reject(utils.gettext("Unexpected response from server"));
+                } else if ([401, 403, 404, 500].indexOf(response.status) !== -1) {
+                    return Promise.reject(Wirecloud.GlobalLogManager.parseErrorResponse(response));
+                }
+
+                return Promise.resolve(this);
+            });
+        }
+
+        setCustomDragboardWidth(width) {
+            this.customWidth = width;
+            this.updateWidgetScreenSize(width);
+        }
+
+        restoreDragboardWidth() {
+            this.customWidth = -1;
+            this.updateWidgetScreenSize(window.innerWidth);
         }
 
         _addWidget(widget) {

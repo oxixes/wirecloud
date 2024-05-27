@@ -106,7 +106,6 @@
 
     const getUpdatedLayoutConfigurations = function getUpdatedLayoutConfigurations(newLayout) {
         const layoutConfigurations = this.model.layoutConfigurations;
-        // const updatedLayoutConfigurations = [];
 
         const priv = privates.get(this);
         const tabChange = priv.tab !== newLayout.dragboard.tab;
@@ -155,10 +154,7 @@
 
             if (dragboardChange && !(newLayout instanceof Wirecloud.ui.FreeLayout)) {
                 const matrix = Wirecloud.Utils.getLayoutMatrix(newLayout, newLayout.dragboard.widgets, avgScreenSize);
-                console.log(newLayout);
                 const newposition = newLayout._searchFreeSpace2(newLayoutConfiguration.width, newLayoutConfiguration.height, matrix);
-                console.log("newposition", newposition);
-                console.log("matrix", matrix);
                 newposition.relx = true;
                 newposition.rely = true;
                 newposition.anchor = "top-left";
@@ -196,11 +192,7 @@
                     });
                 }
             }
-
-            // updatedLayoutConfigurations.push(newLayoutConfiguration);
         });
-
-        // return updatedLayoutConfigurations;
     };
 
     // =========================================================================
@@ -710,7 +702,6 @@
             return this;
         }
 
-        // MARK Adrian Quizá esto sea importante
         moveToLayout(newLayout) {
             if (this.layout === newLayout) {
                 return Promise.resolve();
@@ -850,7 +841,8 @@
                 height: this.model.shape.height
             };
 
-            this.layout.removeWidget(this, false);
+            this.layout.removeWidgetEventListeners(this);
+            this.layout = null;
 
             this.setPosition(newPos, false);
             this.setShape(newShape, false, false, false, false);

@@ -289,6 +289,15 @@
         }
 
         /**
+         * Removes all event listeners associated with the widget
+         *
+         * @param {WidgetView} widget
+         */
+        removeWidgetEventListeners(widget) {
+            widget.removeEventListener('remove', this._on_remove_widget_bound);
+        }
+
+        /**
          * Moves all widget in this layout to another layout.
          *
          * @param {DragboardLayout} destLayout Layout where the iWidgets are going to be

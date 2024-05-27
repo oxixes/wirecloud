@@ -536,7 +536,7 @@
                 } else {
                     iWidgetsToReinsert.push(widget);
                 }
-            })
+            });
 
             const modified = iWidgetsToReinsert.length > 0;
             // Reinsert the iwidgets that didn't fit in their positions

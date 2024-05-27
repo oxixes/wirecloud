@@ -249,26 +249,10 @@ def SaveIWidget(iwidget, user, tab, initial_variable_values=None, commit=True):
     new_iwidget.name = iwidget_info['title']
     new_iwidget.layout = iwidget.get('layout', 0)
 
-    # set default positions
     new_iwidget.positions = {
-        'configurations': [
-            {
-                'moreOrEqual': 0,
-                'lessOrEqual': -1,
-                'id': 0,
-                'widget': {
-                    'top': 0,
-                    'left': 0,
-                    'zIndex': 0,
-                    'height': 1,
-                    'width': 1,
-                    'minimized': False,
-                    'titlevisible': True,
-                    'fulldragboard': False,
-                },
-            }
-        ]
+        'configurations': []
     }
+
 
     if initial_variable_values is not None:
         set_initial_values(new_iwidget, initial_variable_values, iwidget_info, user)
@@ -276,6 +260,23 @@ def SaveIWidget(iwidget, user, tab, initial_variable_values=None, commit=True):
     update_title_value(new_iwidget, iwidget)
     if "layoutConfigurations" in iwidget:
         update_position(new_iwidget, 'widget', iwidget)
+    else:
+        # set default positions
+        new_iwidget.positions['configurations'] = [{
+            'moreOrEqual': 0,
+            'lessOrEqual': -1,
+            'id': 0,
+            'widget': {
+                'top': 0,
+                'left': 0,
+                'zIndex': 0,
+                'height': 1,
+                'width': 1,
+                'minimized': False,
+                'titlevisible': True,
+                'fulldragboard': False,
+            },
+        }]
 
     if commit:
         new_iwidget.save()

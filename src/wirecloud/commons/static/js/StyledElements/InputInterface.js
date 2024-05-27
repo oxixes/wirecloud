@@ -63,6 +63,8 @@
             } else {
                 this._description = options.label;
             }
+
+            this._eventListeners = {};
         }
 
         repaint() {
@@ -142,6 +144,30 @@
          */
         _checkValue(newValue) {
             return se.InputValidationError.NO_ERROR;
+        }
+
+        /**
+         * @private
+         *
+         * Calls the event listeners for the given event type.
+         */
+        _callEvent(type, event) {
+            if (type in this._eventListeners) {
+                this._eventListeners[type].forEach(function (listener) {
+                    listener(event);
+                });
+            }
+        }
+
+        /**
+         * Adds an event listener to this InputInterface.
+         */
+        addEventListener(eventType, listener) {
+            if (!(eventType in this._eventListeners)) {
+                this._eventListeners[eventType] = [];
+            }
+
+            this._eventListeners[eventType].push(listener);
         }
 
         /**

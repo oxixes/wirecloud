@@ -56,25 +56,15 @@
         return widgets;
     };
 
-    const get_layout_configs = function get_layout_configs(widget) {
-        const layoutConfigs = [];
-
-        widget.layoutConfigurations.forEach(function (layoutConfig) {
-            layoutConfigs.push({
-                id: layoutConfig.id,
-                moreOrEqual: layoutConfig.moreOrEqual,
-                lessOrEqual: layoutConfig.lessOrEqual
-            });
-        });
-
-        return layoutConfigs;
-    }
-
     // =========================================================================
     // EVENT HANDLERS
     // =========================================================================
 
     const on_change_preferences = function on_change_preferences(preferences, modifiedValues) {
+        if ('screenSizes' in modifiedValues) {
+            this.dragboard._updateScreenSizes();
+        }
+
         if ('baselayout' in modifiedValues) {
             this.dragboard._updateBaseLayout();
         }
@@ -125,13 +115,9 @@
     };
 
     const on_windowresize = function on_windowresize() {
-        this.dragboard.resetLayouts();
-        this.widgets.forEach((widget) => {
-            widget.updateWindowSize(window.innerWidth);
-        });
-
-        this.dragboard.refreshPositionBasedOnZIndex();
-        this.dragboard.paint();
+        if (this.dragboard.customWidth === -1) {
+            this.dragboard.updateWidgetScreenSize(window.innerWidth);
+        }
     };
 
     ns.WorkspaceTabView = class WorkspaceTabView extends se.Tab {
@@ -272,21 +258,7 @@
          * resolved, or an Error if rejected.
          */
         createWidget(resource, options) {
-            let layoutConfigs = []
-            if (this.widgets.length > 0) {
-                // All widgets SHOULD have the same layout configuration sizes. If
-                // this is not the case something has gonw wrong or manual modifications
-                // have been made to the layout configurations, but we will use the first
-                // widget as reference.
-                layoutConfigs = get_layout_configs(this.widgets[0].model);
-            } else {
-                // TODO Adrian this should come from the UI defined sizes, which are not yet available
-                layoutConfigs.push({
-                    id: 0,
-                    moreOrEqual: 0,
-                    lessOrEqual: -1
-                });
-            }
+            const layoutConfigs = utils.clone(this.model.preferences.get('screenSizes'));
 
             options = utils.merge({
                 commit: true,
@@ -369,6 +341,44 @@
                     return Promise.resolve(this.findWidget(model.id));
                 }
             );
+        }
+
+        setEditingInterval(moreOrEqual, lessOrEqual) {
+            let avgScreenSize = Math.floor((moreOrEqual + lessOrEqual) / 2);
+            if (lessOrEqual === -1) {
+                avgScreenSize = moreOrEqual;
+            }
+            this.dragboard.setCustomDragboardWidth(avgScreenSize);
+
+            const intervalString = "[" + moreOrEqual + ", " + (lessOrEqual === -1 ? "+∞)" : lessOrEqual + "]");
+            const text = utils.interpolate(utils.gettext("Currently editing for screen sizes %(interval)s"), {interval: intervalString});
+
+            const div = document.createElement('div');
+            div.className = 'wc-editing-interval';
+            const span = document.createElement('span');
+            span.textContent = text;
+            div.appendChild(span);
+
+            const a = document.createElement('a');
+            a.className = 'far fa-times-circle wc-editing-interval-close';
+            a.href = '#';
+            a.addEventListener('click', () => {
+                this.quitEditingInterval();
+            });
+            div.appendChild(a);
+
+            this.intervalEditionIndicator = div;
+
+            this.wrapperElement.appendChild(div);
+        }
+
+        quitEditingInterval() {
+            this.dragboard.restoreDragboardWidth();
+
+            if (this.intervalEditionIndicator != null) {
+                this.intervalEditionIndicator.remove();
+                this.intervalEditionIndicator = null;
+            }
         }
 
         /**

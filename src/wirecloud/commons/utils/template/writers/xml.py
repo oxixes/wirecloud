@@ -319,7 +319,7 @@ def build_xml_document(options):
         for script in options['js_files']:
             etree.SubElement(scripts, 'script', src=script)
 
-    if (options['type'] == 'operator' or options['type'] == 'widget') and options['macversion'] > 1:
+    if (options['type'] == 'operator' or options['type'] == 'widget') and options['macversion'] > 1 and 'entrypoint' in options:
         # Add entrypoint
         etree.SubElement(template, 'entrypoint', name=options['entrypoint'])
 

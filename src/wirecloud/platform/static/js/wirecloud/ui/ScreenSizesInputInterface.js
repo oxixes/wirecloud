@@ -59,8 +59,6 @@
                 }
             });
 
-            screenSizes.sort((a, b) => a.moreOrEqual - b.moreOrEqual);
-
             const newScreenSize = {
                 id: maxId + 1,
                 moreOrEqual: screenSizes[screenSizes.length - 1].lessOrEqual + 1,
@@ -84,8 +82,14 @@
         on_valueChange(screenSizeId, from, value, update = true) {
             const screenSizes = utils.clone(this.value);
 
-            const screenSize = screenSizes.find((screenSize) => screenSize.id === screenSizeId);
-            screenSize[from] = value;
+            const screenSizeIdx = screenSizes.findIndex((screenSize) => screenSize.id === screenSizeId);
+            screenSizes[screenSizeIdx][from] = value;
+
+            if (from === 'moreOrEqual' && screenSizeIdx > 0) {
+                screenSizes[screenSizeIdx - 1].lessOrEqual = value - 1;
+            } else if (from === 'lessOrEqual' && screenSizeIdx < screenSizes.length - 1) {
+                screenSizes[screenSizeIdx + 1].moreOrEqual = value + 1;
+            }
 
             if (update) {
                 this._update(screenSizes, false);

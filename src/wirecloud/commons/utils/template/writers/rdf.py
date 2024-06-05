@@ -588,7 +588,7 @@ def build_rdf_graph(template_info):
             graph.add((js_node, WIRE['index'], rdflib.Literal(str(index))))
             graph.add((resource_uri, USDL['utilizedResource'], js_node))
 
-    if (template_info['type'] == 'operator' or template_info['type'] == 'widget') and template_info['macversion'] > 1:
+    if (template_info['type'] == 'operator' or template_info['type'] == 'widget') and template_info['macversion'] > 1 and 'entrypoint' in template_info:
         # Add entryPoint
         graph.add((resource_uri, WIRE['entryPoint'], rdflib.Literal(template_info.get('entrypoint'))))
 

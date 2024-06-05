@@ -217,7 +217,7 @@ class JSONTemplateParser(object):
 
         if self._info['type'] == 'widget':
             if self._info['macversion'] > 1:
-                self._check_string_fields(('entrypoint', ), required=True)
+                self._check_string_fields(('entrypoint', ), required=False)
 
             self._check_array_fields(('altcontents',))
             if self._info.get('contents', None) is None:
@@ -231,7 +231,7 @@ class JSONTemplateParser(object):
 
         elif self._info['type'] == 'operator':
             if self._info['macversion'] > 1:
-                self._check_string_fields(('entrypoint', ), required=True)
+                self._check_string_fields(('entrypoint', ), required=False)
 
         elif self._info['type'] == 'mashup':
 

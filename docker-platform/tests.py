@@ -78,7 +78,7 @@ class StandaloneTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Initializing standalone test case")
         print("#\n", flush=True)
-        sh.docker_compose("-f", "docker-compose-standalone.yml", "up", d=True, remove_orphans=True, _fg=True)
+        sh.docker.compose("-f", "docker-compose-standalone.yml", "up", d=True, remove_orphans=True, _fg=True)
         wait_until_running()
         print(flush=True)
 
@@ -88,7 +88,7 @@ class StandaloneTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Removing containers and volumes")
         print("#\n", flush=True)
-        sh.docker_compose.down(remove_orphans=True, v=True, _fg=True)
+        sh.docker.compose.down(remove_orphans=True, v=True, _fg=True)
         print(flush=True)
 
 
@@ -100,7 +100,7 @@ class SimpleTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Initializing simple test case")
         print("#\n", flush=True)
-        sh.docker_compose("-f", "docker-compose-simple.yml", "up", d=True, remove_orphans=True, _fg=True)
+        sh.docker.compose("-f", "docker-compose-simple.yml", "up", d=True, remove_orphans=True, _fg=True)
         wait_until_running()
         print(flush=True)
 
@@ -110,7 +110,7 @@ class SimpleTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Removing containers and volumes")
         print("#\n", flush=True)
-        sh.docker_compose.down(remove_orphans=True, v=True, _fg=True)
+        sh.docker.compose.down(remove_orphans=True, v=True, _fg=True)
         print(flush=True)
 
 
@@ -122,7 +122,7 @@ class ComposedTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Initializing composed test case")
         print("#\n", flush=True)
-        sh.docker_compose.up(d=True, remove_orphans=True, _fg=True)
+        sh.docker.compose.up(d=True, remove_orphans=True, _fg=True)
         wait_until_running()
         print(flush=True)
 
@@ -132,7 +132,7 @@ class ComposedTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Removing containers and volumes")
         print("#\n", flush=True)
-        sh.docker_compose.down(remove_orphans=True, v=True, _fg=True)
+        sh.docker.compose.down(remove_orphans=True, v=True, _fg=True)
         print(flush=True)
 
 
@@ -145,7 +145,7 @@ class ReadOnlyConfigTests(unittest.TestCase, WireCloudTests):
         print("# Initializing read-only config test case")
         print("#\n", flush=True)
 
-        sh.docker_compose("-f", "docker-compose-config-file.yml", "up", d=True, remove_orphans=True, _fg=True)
+        sh.docker.compose("-f", "docker-compose-config-file.yml", "up", d=True, remove_orphans=True, _fg=True)
         wait_until_running()
         print(flush=True)
 
@@ -155,7 +155,7 @@ class ReadOnlyConfigTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Removing containers and volumes")
         print("#\n", flush=True)
-        sh.docker_compose.down(remove_orphans=True, v=True, _fg=True)
+        sh.docker.compose.down(remove_orphans=True, v=True, _fg=True)
         print(flush=True)
 
 
@@ -173,7 +173,7 @@ class IDMTests(unittest.TestCase, WireCloudTests):
         env["FIWARE_IDM_SERVER"] = "https://accounts.example.com"
         env["SOCIAL_AUTH_FIWARE_KEY"] = "wirecloud_test_client_id"
         env["SOCIAL_AUTH_FIWARE_SECRET"] = "notused"
-        sh.docker_compose("-f", "docker-compose-idm.yml", "up", d=True, remove_orphans=True, _env=env, _fg=True)
+        sh.docker.compose("-f", "docker-compose-idm.yml", "up", d=True, remove_orphans=True, _env=env, _fg=True)
         wait_until_running()
         print(flush=True)
 
@@ -183,7 +183,7 @@ class IDMTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Removing containers and volumes")
         print("#\n", flush=True)
-        sh.docker_compose.down(remove_orphans=True, v=True, _fg=True)
+        sh.docker.compose.down(remove_orphans=True, v=True, _fg=True)
         print(flush=True)
 
     def test_login_should_redirect_to_idm(self):
@@ -218,7 +218,7 @@ class CustomUserTests(unittest.TestCase, WireCloudTests):
         env = {}
         env.update(os.environ)
         env["WIRECLOUD_USER"] = "{}".format(uid)
-        sh.docker_compose("-f", "docker-compose-custom-user.yml", "up", d=True, remove_orphans=True, _env=env, _fg=True)
+        sh.docker.compose("-f", "docker-compose-custom-user.yml", "up", d=True, remove_orphans=True, _env=env, _fg=True)
         wait_until_running()
         print(flush=True)
 
@@ -228,7 +228,7 @@ class CustomUserTests(unittest.TestCase, WireCloudTests):
         print("#")
         print("# Removing containers and volumes")
         print("#\n", flush=True)
-        sh.docker_compose.down(remove_orphans=True, v=True, _fg=True)
+        sh.docker.compose.down(remove_orphans=True, v=True, _fg=True)
         shutil.rmtree('wirecloud-data')
         shutil.rmtree('wirecloud-static')
         print(flush=True)

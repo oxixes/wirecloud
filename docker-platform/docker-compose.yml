@@ -39,7 +39,7 @@ services:
 
     wirecloud:
         restart: always
-        image: fiware/wirecloud:dev
+        image: fiware/wirecloud:latest
         depends_on:
             - postgres
             - elasticsearch

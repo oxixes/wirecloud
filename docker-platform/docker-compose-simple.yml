@@ -16,7 +16,7 @@ services:
 
     wirecloud:
         restart: always
-        image: fiware/wirecloud:dev
+        image: fiware/wirecloud:latest
         environment:
             - DEBUG=False
             - FORWARDED_ALLOW_IPS=*

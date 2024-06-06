@@ -4,7 +4,7 @@ services:
 
     wirecloud:
         restart: always
-        image: fiware/wirecloud:dev
+        image: fiware/wirecloud:latest
         # If you want to use a user from the host, provide here the id of the
         # user, e.g. `export WIRECLOUD_USER=$(id -u username)`
         user: ${WIRECLOUD_USER:-0}

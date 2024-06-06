@@ -64,7 +64,7 @@ jobs:
       
       - name: Install dependencies to test
         run: |
-          pip install sh requests
+          sudo pip install sh requests
 
       - name: Run tests
         run: |

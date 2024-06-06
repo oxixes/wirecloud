@@ -44,7 +44,7 @@ RUN --mount=type=bind,from=builder,source=/wirecloud/src/dist/,target=/dist/ \
     --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip install /dist/*.whl \ 
     social-auth-app-django "gunicorn==21.2" "psycopg2==2.8.6" pylibmc pysolr "elasticsearch==2.4.1" \
-    "regex==2019.02.18" "channels<2.3" "channels-redis" "wirecloud-keycloak>=0.3.0" "whitenoise" && \
+    "regex==2019.02.18" "channels<2.3" "channels-redis" "wirecloud-keycloak>=0.3.0" && \
     pip uninstall selenium -y
 
 RUN adduser --system --group --shell /bin/bash wirecloud && \
@@ -62,9 +62,6 @@ RUN wirecloud-admin startproject wirecloud_instance wirecloud_instance && \
 COPY docker-platform/settings.py docker-platform/urls.py /opt/wirecloud_instance/wirecloud_instance/
 COPY docker-platform/glogger.py /usr/local/lib/python${WIRECLOUD_PYTHON_VERSION}/site-packages/wirecloud/
 WORKDIR /opt/wirecloud_instance
-
-#Add whitenoise to the wsgi.py file to serve static files
-RUN echo '\nfrom whitenoise import WhiteNoise\napplication = WhiteNoise(application, root = "\/var\/www\/static", prefix="static\/", autorefresh=True)' >> wirecloud_instance/wsgi.py
 
 VOLUME /var/www/static
 VOLUME /opt/wirecloud_instance/data

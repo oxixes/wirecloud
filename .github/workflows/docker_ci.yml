@@ -69,7 +69,7 @@ jobs:
       - name: Run tests
         run: |
           cd docker-platform
-          python tests.py
+          sudo python tests.py
 
       - name: Build and push
         uses: docker/build-push-action@v5

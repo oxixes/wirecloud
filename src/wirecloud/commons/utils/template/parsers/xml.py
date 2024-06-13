@@ -450,7 +450,9 @@ class ApplicationMashupTemplateParser(object):
             for script in js_files:
                 self._info['js_files'].append(str(script.get('src')))
 
-            self._info["entrypoint"] = self.get_xpath(ENTRYPOINT_XPATH, self._doc, required=True).get('name')
+            entrypoint = self.get_xpath(ENTRYPOINT_XPATH, self._doc, required=False)
+            if entrypoint is not None:
+                self._info["entrypoint"] = entrypoint.get('name')
         else:
             js_files = self._xpath(SCRIPT_XPATH, self._doc)
             if len(js_files) > 0:
@@ -467,7 +469,9 @@ class ApplicationMashupTemplateParser(object):
             self._info['js_files'].append(str(script.get('src')))
 
         if self._info["macversion"] > 1:
-            self._info["entrypoint"] = self.get_xpath(ENTRYPOINT_XPATH, self._doc, required=True).get('name')
+            entrypoint = self.get_xpath(ENTRYPOINT_XPATH, self._doc, required=False)
+            if entrypoint is not None:
+                self._info["entrypoint"] = entrypoint.get('name')
 
     def _parse_component_preferences(self):
 

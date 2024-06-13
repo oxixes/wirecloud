@@ -136,6 +136,10 @@
             return result;
         }
 
+        removeHandle() {
+            this.handle.remove();
+        }
+
         removeWidget(widget, affectsDragboard) {
             const result = super.removeWidget(widget, affectsDragboard);
 
@@ -205,7 +209,7 @@
                 } else {
                     offset = 0;
                 }
-                element.style.left = this.getColumnOffset(widget.position, true);
+                element.style.left = this.getColumnOffset(widget.position, null, true);
                 element.style.right = "";
                 if (this.position === "top") {
                     element.style.top = offset + "px";

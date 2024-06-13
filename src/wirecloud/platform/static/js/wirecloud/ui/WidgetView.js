@@ -842,6 +842,9 @@
             };
 
             this.layout.removeWidgetEventListeners(this);
+            if ('removeHandle' in this.layout) {
+                this.layout.removeHandle();
+            }
             this.layout = null;
 
             this.setPosition(newPos, false);

@@ -148,6 +148,7 @@
     if (!window.monaco) {
         // If monaco is not available, use the TextArea class
         se.CodeArea = se.TextArea;
+        se.__Testing__CodeArea = CodeAreaClass; // For testing purposes
     } else {
         se.CodeArea = CodeAreaClass;
     }

@@ -217,10 +217,10 @@
             this.fulldragboardLayout = new Wirecloud.ui.FullDragboardLayout(this);
             this.baseLayout = this._buildLayoutFromPreferences();
             this.freeLayout = new Wirecloud.ui.FreeLayout(this);
-            this.leftLayout = new Wirecloud.ui.SidebarLayout(this);
-            this.rightLayout = new Wirecloud.ui.SidebarLayout(this, {position: "right"});
-            this.bottomLayout = new Wirecloud.ui.SidebarLayout(this, {position: "bottom"});
-            this.topLayout = new Wirecloud.ui.SidebarLayout(this, {position: "top"});
+            this.leftLayout = new Wirecloud.ui.SidebarLayout(this, {active: (this.leftLayout) ? this.leftLayout.isActive() : false});
+            this.rightLayout = new Wirecloud.ui.SidebarLayout(this, {position: "right", active: (this.rightLayout) ? this.rightLayout.isActive() : false});
+            this.bottomLayout = new Wirecloud.ui.SidebarLayout(this, {position: "bottom", active: (this.bottomLayout) ? this.bottomLayout.isActive() : false});
+            this.topLayout = new Wirecloud.ui.SidebarLayout(this, {position: "top", active: (this.topLayout) ? this.topLayout.isActive() : false});
         }
 
         updateWidgetScreenSize(screenSize) {

@@ -79,7 +79,8 @@
 
         constructor(dragboard, options) {
             options = utils.merge({
-                position: "left"
+                position: "left",
+                active: false
             }, options);
 
             if (POSITIONS.indexOf(options.position) === -1) {
@@ -97,7 +98,7 @@
             );
 
             privates.set(this, {
-                active: false
+                active: options.active
             });
 
             Object.defineProperties(this, {
@@ -115,7 +116,7 @@
 
             this.handle = document.createElement("div");
             this.handleicon = document.createElement("i");
-            this.handleicon.className = "fas fa-caret-" + OPPOSITE[this.position];
+            this.handleicon.className = "fas fa-caret-" + (this.active ? ICON[this.position] : OPPOSITE[this.position]);
             this.handle.appendChild(this.handleicon);
             this.handle.addEventListener("click", () => {
                 this.active = !this.active;
@@ -243,6 +244,10 @@
             } else {
                 return this.getHeight();
             }
+        }
+
+        isActive() {
+            return this.active;
         }
 
     }

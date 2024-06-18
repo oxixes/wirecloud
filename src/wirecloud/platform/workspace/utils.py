@@ -532,20 +532,8 @@ def get_iwidget_data(iwidget, workspace, cache_manager=None, user=None):
         'properties': {}
     }
 
-    # Fix old iwidget format
     if not 'configurations' in iwidget.positions:
-        iwidget.positions['configurations'] = [
-            {
-                'moreOrEqual': 0,
-                'lessOrEqual': -1,
-                'id': 0,
-                'widget': iwidget.positions.get('widget')
-            }
-        ]
-
-        del iwidget.positions['widget']
-
-        iwidget.save()
+        raise ValueError(_('Invalid iwidget format stored in the database. Please, update the iwidget positions field.'))
 
     for layoutConfiguration in iwidget.positions.get('configurations'):
         widget_position = layoutConfiguration.get('widget', {})

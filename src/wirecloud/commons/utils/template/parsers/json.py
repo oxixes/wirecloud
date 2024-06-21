@@ -255,15 +255,18 @@ class JSONTemplateParser(object):
                         ]
 
                         layout = screenSizes[0]['rendering'].get('layout', 0)
-                        widget['layout'] = layout
+                        widget['layout'] = int(layout)
+                        if 'layout' in screenSizes[0]['rendering']:
+                            del screenSizes[0]['rendering']['layout']
                     else:
-                        layout = widget.get('layout', 0)
+                        layout = int(widget.get('layout', 0))
+
+                    self._check_integer_fields(('layout',), place=widget, default=0, allow_cast=True)
 
                     for screenSize in screenSizes:
                         self._check_integer_fields(('moreOrEqual', 'lessOrEqual', 'id'), place=screenSize, required=True)
 
                         rendering = screenSize.get('rendering', {})
-                        self._check_integer_fields(('layout',), place=rendering, default=0, allow_cast=True)
                         self._check_boolean_fields(('relwidth',), place=rendering, default=True)
                         self._check_boolean_fields(('relheight',), place=rendering, default=(layout != 1))
 

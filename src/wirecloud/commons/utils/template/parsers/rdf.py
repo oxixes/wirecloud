@@ -717,7 +717,15 @@ class RDFTemplateParser(object):
                 rendering = self._get_field(WIRE_M, 'hasiWidgetRendering', widget, id_=True, required=False)
                 screenSizes = self._graph.objects(widget, WIRE_M['hasScreenSize'])
                 vendor = self._get_field(USDL, 'hasProvider', widget, id_=True, required=True)
-                if len(screenSizes) > 0:
+                for _ in screenSizes:
+                    hasScreenSizes = True
+                    break
+                else:
+                    hasScreenSizes = False
+
+                screenSizes = self._graph.objects(widget, WIRE_M['hasScreenSize'])
+
+                if hasScreenSizes:
                     layout = int(self._get_field(WIRE_M, 'layout', widget, required=False, default='0'))
                 else:
                     layout = int(self._get_field(WIRE_M, 'layout', rendering, default='0'))
@@ -735,7 +743,7 @@ class RDFTemplateParser(object):
                 }
 
                 widget_info['screenSizes'] = []
-                if len(screenSizes) > 0:
+                if hasScreenSizes:
                     for screenSize in screenSizes:
                         position = self._get_field(WIRE_M, 'hasPosition', screenSize, id_=True, required=False)
                         rendering = self._get_field(WIRE_M, 'hasiWidgetRendering', screenSize, id_=True, required=False)
@@ -747,17 +755,17 @@ class RDFTemplateParser(object):
                                 'anchor': self._get_field(WIRE_M, 'anchor', position, required=False, default="top-left"),
                                 'relx': self._get_field(WIRE_M, 'relx', position, required=False, default='true').lower() == 'true',
                                 'rely': self._get_field(WIRE_M, 'rely', position, required=False, default=('true' if layout != 1 else 'false')).lower() == 'true',
-                                'x': int(float(self._get_field(WIRE_M, 'x', position))),
-                                'y': int(float(self._get_field(WIRE_M, 'y', position))),
-                                'z': int(float(self._get_field(WIRE_M, 'z', position))),
+                                'x': self._get_field(WIRE_M, 'x', position),
+                                'y': self._get_field(WIRE_M, 'y', position),
+                                'z': self._get_field(WIRE_M, 'z', position),
                             },
                             'rendering': {
                                 'fulldragboard': self._get_field(WIRE_M, 'fullDragboard', rendering, required=False).lower() == 'true',
                                 'minimized': self._get_field(WIRE_M, 'minimized', rendering, required=False).lower() == 'true',
-                                'relwidth': self._get_field(WIRE_M, 'relwidth', rendering, required=False).lower() == 'true',
-                                'relheight': self._get_field(WIRE_M, 'relheight', rendering, required=False).lower() == 'true',
-                                'width': int(float(self._get_field(WIRE, 'renderingWidth', rendering))),
-                                'height': int(float(self._get_field(WIRE, 'renderingHeight', rendering))),
+                                'relwidth': self._get_field(WIRE_M, 'relwidth', rendering, required=False, default='True').lower() == 'true',
+                                'relheight': self._get_field(WIRE_M, 'relheight', rendering, required=False, default=('true' if layout != 1 else 'false')).lower() == 'true',
+                                'width': self._get_field(WIRE, 'renderingWidth', rendering),
+                                'height': self._get_field(WIRE, 'renderingHeight', rendering),
                                 'titlevisible': self._get_field(WIRE_M, 'titlevisible', rendering, default="true", required=False).lower() == 'true',
                             }
                         }
@@ -771,20 +779,21 @@ class RDFTemplateParser(object):
                             'anchor': self._get_field(WIRE_M, 'anchor', position, required=False, default="top-left"),
                             'relx': self._get_field(WIRE_M, 'relx', position, required=False, default='true').lower() == 'true',
                             'rely': self._get_field(WIRE_M, 'rely', position, required=False, default=('true' if layout != 1 else 'false')).lower() == 'true',
-                            'x': int(float(self._get_field(WIRE_M, 'x', position))),
-                            'y': int(float(self._get_field(WIRE_M, 'y', position))),
-                            'z': int(float(self._get_field(WIRE_M, 'z', position))),
+                            'x': self._get_field(WIRE_M, 'x', position),
+                            'y': self._get_field(WIRE_M, 'y', position),
+                            'z': self._get_field(WIRE_M, 'z', position),
                         },
                         'rendering': {
                             'fulldragboard': self._get_field(WIRE_M, 'fullDragboard', rendering, required=False).lower() == 'true',
                             'minimized': self._get_field(WIRE_M, 'minimized', rendering, required=False).lower() == 'true',
-                            'relwidth': self._get_field(WIRE_M, 'relwidth', rendering, required=False).lower() == 'true',
-                            'relheight': self._get_field(WIRE_M, 'relheight', rendering, required=False).lower() == 'true',
-                            'width': int(float(self._get_field(WIRE, 'renderingWidth', rendering))),
-                            'height': int(float(self._get_field(WIRE, 'renderingHeight', rendering))),
+                            'relwidth': self._get_field(WIRE_M, 'relwidth', rendering, required=False, default='True').lower() == 'true',
+                            'relheight': self._get_field(WIRE_M, 'relheight', rendering, required=False, default=('true' if layout != 1 else 'false')).lower() == 'true',
+                            'width': self._get_field(WIRE, 'renderingWidth', rendering),
+                            'height': self._get_field(WIRE, 'renderingHeight', rendering),
                             'titlevisible': self._get_field(WIRE_M, 'titlevisible', rendering, default="true", required=False).lower() == 'true',
                         }
                     }
+                    widget_info['screenSizes'].append(screen_size_info)
 
                 for prop in self._graph.objects(widget, WIRE_M['hasiWidgetProperty']):
                     widget_info['properties'][self._get_field(DCTERMS, 'title', prop)] = {

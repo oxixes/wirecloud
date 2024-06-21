@@ -147,7 +147,7 @@ def write_mashup_tree(doc, resources, options):
 
                 rendering = etree.SubElement(screenSizeElem, 'rendering',
                                              height=str(int(float(screenSize['rendering']['height']))),
-                                             width=str(int(float(screenSize['rendering']['width'])))),
+                                             width=str(int(float(screenSize['rendering']['width']))))
                 addAttributes(screenSize['rendering'], rendering, ('minimized', 'fulldragboard'), default='false', type='boolean')
                 addAttributes(screenSize['rendering'], rendering, ('relwidth', 'titlevisible'), default='true', type='boolean')
                 addAttributes(screenSize['rendering'], rendering, ('relheight',), default=('true' if layout != 1 else 'false'), type='boolean')

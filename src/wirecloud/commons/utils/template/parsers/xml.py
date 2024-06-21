@@ -609,17 +609,17 @@ class ApplicationMashupTemplateParser(object):
                                 'anchor': str(position.get('anchor', 'top-left')),
                                 'relx': position.get('relx', 'true').lower() == 'true',
                                 'rely': position.get('rely', 'true' if layout != 1 else 'false').lower() == 'true',
-                                'x': int(float(position.get('x'))),
-                                'y': int(float(position.get('y'))),
-                                'z': int(float(position.get('z'))),
+                                'x': position.get('x'),
+                                'y': position.get('y'),
+                                'z': position.get('z'),
                             },
                             'rendering': {
                                 'fulldragboard': rendering.get('fulldragboard', 'false').lower() == 'true',
                                 'minimized': rendering.get('minimized', 'false').lower() == 'true',
                                 'relwidth': rendering.get('relwidth', 'true').lower() == 'true',
                                 'relheight': rendering.get('relheight', 'true' if layout != 1 else 'false').lower() == 'true',
-                                'width': int(float(rendering.get('width'))),
-                                'height': int(float(rendering.get('height'))),
+                                'width': rendering.get('width'),
+                                'height': rendering.get('height'),
                                 'titlevisible': rendering.get('titlevisible', 'true').lower() == 'true',
                             }
                         }
@@ -646,7 +646,6 @@ class ApplicationMashupTemplateParser(object):
                                 'relheight': rendering.get('relheight', 'true' if layout != 1 else 'false').lower() == 'true',
                                 'width': str(rendering.get('width')),
                                 'height': str(rendering.get('height')),
-                                'layout': layout,
                                 'titlevisible': rendering.get('titlevisible', 'true').lower() == 'true',
                             }
                         }

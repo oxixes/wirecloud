@@ -140,7 +140,9 @@
                     this.walletButton.active = false;
                     this.layout.slideOut();
                     this.tabs.forEach((tab) => {
-                        tab.quitEditingInterval();
+                        if (tab.quitEditingInterval) {
+                            tab.quitEditingInterval();
+                        }
                     });
                 }
                 this.activeTab.dragboard._updateIWidgetSizes(true, true);

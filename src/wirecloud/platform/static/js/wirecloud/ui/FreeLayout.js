@@ -139,7 +139,7 @@
                 offsetInLU = Math.round(parsedSize[0]);
             } else {
                 if (parsedSize[1] === '%') {
-                    pixels = Math.round((parsedSize[0] * width || this.getWidth()) / 100);
+                    pixels = Math.round((parsedSize[0] * (width || this.getWidth())) / 100);
                 } else {
                     pixels = parsedSize[0] < this.dragboard.leftMargin ? 0 : parsedSize[0] - this.dragboard.leftMargin;
                 }

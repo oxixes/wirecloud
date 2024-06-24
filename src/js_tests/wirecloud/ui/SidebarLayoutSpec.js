@@ -113,7 +113,7 @@
 
         });
 
-        describe("adaptColumnOffset(value)", () => {
+        describe("adaptColumnOffset(value[, width])", () => {
 
             it("should call parent method for top sidebars", () => {
                 const result = {};
@@ -122,7 +122,7 @@
 
                 const value = layout.adaptColumnOffset(50);
 
-                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptColumnOffset).toHaveBeenCalledWith(50);
+                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptColumnOffset).toHaveBeenCalledWith(50, undefined);
                 expect(value).toBe(result);
             });
 
@@ -133,7 +133,7 @@
 
                 const value = layout.adaptColumnOffset(50);
 
-                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptColumnOffset).toHaveBeenCalledWith(50);
+                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptColumnOffset).toHaveBeenCalledWith(50, undefined);
                 expect(value).toBe(result);
             });
 
@@ -245,7 +245,7 @@
 
         });
 
-        describe("adaptWidth(size)", () => {
+        describe("adaptWidth(size[, width])", () => {
 
             it("should call parent method for top sidebars", () => {
                 const result = {};
@@ -254,7 +254,7 @@
 
                 const value = layout.adaptWidth(50);
 
-                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptWidth).toHaveBeenCalledWith(50);
+                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptWidth).toHaveBeenCalledWith(50, undefined);
                 expect(value).toBe(result);
             });
 
@@ -265,7 +265,7 @@
 
                 const value = layout.adaptWidth(50);
 
-                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptWidth).toHaveBeenCalledWith(50);
+                expect(Wirecloud.ui.SmartColumnLayout.prototype.adaptWidth).toHaveBeenCalledWith(50, undefined);
                 expect(value).toBe(result);
             });
 

@@ -1764,7 +1764,12 @@
             it("updates titlevisible property", (done) => {
                 const widget = new Wirecloud.Widget(LOCKED_WORKSPACE_TAB, EMPTY_WIDGET_META, {
                     id: "1",
-                    titlevisible: false
+                    layoutConfigurations: [{
+                        titlevisible: false,
+                        id: 0,
+                        moreOrEqual: 0,
+                        lessOrEqual: -1
+                    }]
                 });
                 spyOn(Wirecloud.io, "makeRequest");
                 expect(widget.titlevisible).toBe(false);
@@ -1785,7 +1790,12 @@
             it("updates titlevisible property on the server", (done) => {
                 const widget = new Wirecloud.Widget(LOCKED_WORKSPACE_TAB, EMPTY_WIDGET_META, {
                     id: "1",
-                    titlevisible: false
+                    layoutConfigurations: [{
+                        titlevisible: false,
+                        id: 0,
+                        moreOrEqual: 0,
+                        lessOrEqual: -1
+                    }]
                 });
                 spyOn(Wirecloud.io, "makeRequest").and.callFake(function (url, options) {
                     expect(options.method).toEqual("POST");

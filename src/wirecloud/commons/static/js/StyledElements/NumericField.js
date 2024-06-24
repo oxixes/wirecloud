@@ -27,28 +27,6 @@
 
     "use strict";
 
-    const update = function update(inc) {
-        let value = this.getValue();
-        if (!isNaN(value)) {
-            value = Math.round((value + inc) * 100) / 100;
-
-            // Check for max & min values
-            if (value > this.options.max) {
-                value = this.options.max;
-            } else if (value < this.options.min) {
-                value = this.options.min;
-            }
-        } else if (inc > 0 && this.options.min !== Number.NEGATIVE_INFINITY) {
-            value = this.options.min;
-        } else if (inc < 0 && this.options.max !== Number.POSITIVE_INFINITY) {
-            value = this.options.max;
-        } else {
-            value = 0;
-        }
-
-        this.inputElement.value = value;
-    };
-
     const onfocus = function onfocus() {
         this.wrapperElement.classList.add('focus');
         this.dispatchEvent('focus');

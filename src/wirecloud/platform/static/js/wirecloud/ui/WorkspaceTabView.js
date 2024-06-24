@@ -316,7 +316,7 @@
                 }
 
                 if (layoutConfig.left == null || layoutConfig.top == null) {
-                    if (layoutConfig.refposition && "searchBestPosition" in layout) {
+                    if (options.refposition && "searchBestPosition" in layout) {
                         layout.searchBestPosition(layoutConfig, avgScreenSize);
                     } else if ("_searchFreeSpace2" in layout) {
                         const matrix = Wirecloud.Utils.getLayoutMatrix(layout, layout.dragboard.widgets, avgScreenSize);

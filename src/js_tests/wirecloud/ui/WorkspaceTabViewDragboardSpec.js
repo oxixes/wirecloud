@@ -74,7 +74,8 @@
             },
             setPosition: jasmine.createSpy("setPosition").and.callFake(function (options) {
                 this.position.z = options.z;
-            })
+            }),
+            toJSON: function () {}
         };
     };
 
@@ -341,11 +342,11 @@
 
                 expect(dragboard.widgets).toEqual([widget1, widget3]);
                 expect(widget1.setPosition).toHaveBeenCalledWith({
-                    z: 0
-                });
+                    z: 0,
+                }, false);
                 expect(widget3.setPosition).toHaveBeenCalledWith({
                     z: 1
-                });
+                }, false);
             });
 
             it("should do nothing if already painted", () => {

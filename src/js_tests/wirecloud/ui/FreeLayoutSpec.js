@@ -36,7 +36,7 @@
 
         });
 
-        describe("adaptColumnOffset(value)", () => {
+        describe("adaptColumnOffset(value[, width])", () => {
 
             it("should floor cells", () => {
                 const layout = new ns.FreeLayout({});
@@ -435,7 +435,7 @@
                     leftMargin: 4,
                     rightMargin: 7
                 });
-                expect(layout.getColumnOffset({relx: true, anchor: "top-left", x: 500000}, true)).toBe("calc(50% + -1.5px)");
+                expect(layout.getColumnOffset({relx: true, anchor: "top-left", x: 500000}, undefined, true)).toBe("calc(50% + -1.5px)");
             });
 
             it("should work with relative positions (from right)", () => {
@@ -453,7 +453,7 @@
                     rightMargin: 3,
                     leftMargin: 7
                 });
-                expect(layout.getColumnOffset({relx: true, anchor: "top-right", x: 500000}, true)).toBe("calc(50% + -2px)");
+                expect(layout.getColumnOffset({relx: true, anchor: "top-right", x: 500000}, undefined, true)).toBe("calc(50% + -2px)");
             });
 
             it("should work with absolute positions (from left)", () => {
@@ -482,7 +482,7 @@
                     rightMargin: 3,
                     topMargin: 7,
                 });
-                expect(layout.getColumnOffset({relx: false, anchor: "top-right", x: 400}, true)).toBe("403px");
+                expect(layout.getColumnOffset({relx: false, anchor: "top-right", x: 400}, undefined, true)).toBe("403px");
             });
 
         });

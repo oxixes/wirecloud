@@ -43,7 +43,13 @@
             createWidget: jasmine.createSpy("createWidget"),
             id: "8",
             preferences: {
-                get: jasmine.createSpy("get"),
+                get: jasmine.createSpy("get").and.callFake(function (key) {
+                    if (options && key in options.customPreferences) {
+                        return options.customPreferences[key];
+                    } else if (key === "screenSizes") {
+                        return [{id: 0, moreOrEqual: 0, lessOrEqual: -1}];
+                    }
+                }),
                 addEventListener: jasmine.createSpy("addEventListener")
             },
             title: "Tab Title",
@@ -317,16 +323,20 @@
 
             it("should honour initiallayout preference", (done) => {
                 const workspace = create_workspace();
-                const model = create_tab();
-                model.preferences.get.and.returnValue("Free");
+                const tabOptions = {
+                    customPreferences: {
+                        initiallayout: "Free"
+                    }
+                };
+                const model = create_tab(tabOptions);
                 const tab = new ns.WorkspaceTabView("1", notebook, {
                     model: model,
                     workspace: workspace
                 });
                 const widgetmodel = {id: 80};
                 model.createWidget.and.callFake((resource, options) => {
-                    expect(options.left).toEqual(1);
-                    expect(options.top).toEqual(2);
+                    expect(options.layoutConfigurations[0].left).toEqual(1);
+                    expect(options.layoutConfigurations[0].top).toEqual(2);
                     return Promise.resolve(widgetmodel);
                 });
                 const widget = {id: 80};
@@ -334,7 +344,10 @@
                     expect(id).toBe(80);
                     return widget;
                 });
-                tab.dragboard.freeLayout._searchFreeSpace = jasmine.createSpy("_searchFreeSpace").and.returnValue({x: 1, y: 2});
+                tab.dragboard.freeLayout._searchFreeSpace2 = jasmine.createSpy("_searchFreeSpace2").and.returnValue({x: 1, y: 2});
+                tab.dragboard.freeLayout.dragboard = {
+                    widgets: []
+                };
 
                 const p = tab.createWidget({
                     default_height: "120px",
@@ -356,8 +369,8 @@
                 });
                 const widgetmodel = {id: 80};
                 model.createWidget.and.callFake((resource, options) => {
-                    expect(options.left).toEqual(0);
-                    expect(options.top).toEqual(0);
+                    expect(options.layoutConfigurations[0].left).toEqual(0);
+                    expect(options.layoutConfigurations[0].top).toEqual(0);
                     return Promise.resolve(widgetmodel);
                 });
                 const widget = {id: 80};

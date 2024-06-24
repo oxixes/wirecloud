@@ -111,6 +111,10 @@
         const tabChange = priv.tab !== newLayout.dragboard.tab;
         const dragboardChange = this.layout.dragboard !== newLayout.dragboard || tabChange;
 
+        if (!('layoutConfigurations' in this.model)) { // Tests may not have this method
+            return;
+        }
+
         layoutConfigurations.forEach((layoutConfiguration) => {
             if (this.layout instanceof Wirecloud.ui.FullDragboardLayout || newLayout instanceof Wirecloud.ui.FullDragboardLayout) {
                 // Skip if coming from or going to a FullDragboardLayout
@@ -138,13 +142,6 @@
                 });
             } else {
                 Wirecloud.Utils.merge(newLayoutConfiguration, {
-                    relwidth: true,
-                    width: newLayout.adaptWidth(previousWidth + 'px', avgScreenSize).inLU,
-                    relheight: true,
-                    height: newLayout.adaptHeight(previousHeight + 'px').inLU
-                });
-
-                console.log("newShape", {
                     relwidth: true,
                     width: newLayout.adaptWidth(previousWidth + 'px', avgScreenSize).inLU,
                     relheight: true,
@@ -258,8 +255,10 @@
                     set: function (new_layout) {
                         privates.get(this).layout = new_layout;
                         const fulldragboard = new_layout instanceof Wirecloud.ui.FullDragboardLayout;
-                        this.model.setLayoutFulldragboard(fulldragboard);
-                        if (!fulldragboard && new_layout != null) {
+                        if ('setLayoutFulldragboard' in this.model) { // Tests may not have this method
+                            this.model.setLayoutFulldragboard(fulldragboard);
+                        }
+                        if (!fulldragboard && new_layout != null && 'setLayoutIndex' in this.model) {
                             this.model.setLayoutIndex(new_layout.dragboard.layouts.indexOf(new_layout));
                         }
                         update.call(this);
@@ -461,8 +460,8 @@
 
             // Init minimized and title visibility options
             let wrapperHeight = this.wrapperElement.offsetHeight;
-            wrapperHeight = (wrapperHeight === 0) ? 42 : wrapperHeight; // On first load, the height is 0. This is a workaround to avoid this issue
-                                                                        // and set the correct height to the widget
+            // On first load, the height is 0. This is a workaround to avoid this issue and set the correct height to the widget
+            wrapperHeight = (wrapperHeight === 0) ? 42 : wrapperHeight;
             this._setMinimizeStatusStyle(model.minimized, layout, wrapperHeight);
 
             layout.addWidget(this, true);
@@ -865,7 +864,7 @@
             }
         }
 
-        toJSON(action, allLayoutConfigurations) {
+        toJSON(action = 'update', allLayoutConfigurations = false) {
             const fulldragboard = this.layout === this.tab.dragboard.fulldragboardLayout;
 
             // We keep all or only the current layout configuration and then we clone it to add the action

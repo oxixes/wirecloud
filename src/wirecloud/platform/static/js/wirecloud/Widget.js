@@ -252,9 +252,9 @@
     const _getCurrentLayoutConfiguration = function _getCurrentLayoutConfiguration(layoutConfigurations, windowSize) {
         let currentLayoutConfiguration;
         for (const i in layoutConfigurations) {
-            const isValid = (layoutConfigurations[i]["moreOrEqual"] != -1 && layoutConfigurations[i]["lessOrEqual"] == -1 && layoutConfigurations[i].moreOrEqual <= windowSize) ||
-                (layoutConfigurations[i]["moreOrEqual"] == -1 && layoutConfigurations[i]["lessOrEqual"] != -1 && layoutConfigurations[i].lessOrEqual >= windowSize) ||
-                (layoutConfigurations[i]["moreOrEqual"] != -1 && layoutConfigurations[i]["lessOrEqual"] != -1 && layoutConfigurations[i].moreOrEqual <= windowSize && layoutConfigurations[i].lessOrEqual >= windowSize);
+            const isValid = (layoutConfigurations[i].moreOrEqual !== -1 && layoutConfigurations[i].lessOrEqual === -1 && layoutConfigurations[i].moreOrEqual <= windowSize) ||
+                (layoutConfigurations[i].moreOrEqual === -1 && layoutConfigurations[i].lessOrEqual !== -1 && layoutConfigurations[i].lessOrEqual >= windowSize) ||
+                (layoutConfigurations[i].moreOrEqual !== -1 && layoutConfigurations[i].lessOrEqual !== -1 && layoutConfigurations[i].moreOrEqual <= windowSize && layoutConfigurations[i].lessOrEqual >= windowSize);
 
             if (isValid) {
                 currentLayoutConfiguration = layoutConfigurations[i];
@@ -446,6 +446,24 @@
                 title: meta.title,
                 preferences: {},
                 properties: {},
+                layoutConfigurations: [{
+                    id: 0,
+                    moreOrEqual: 0,
+                    lessOrEqual: -1,
+                    anchor: 'top-left',
+                    relx: true,
+                    rely: true,
+                    left: 0,
+                    top: 0,
+                    zIndex: 0,
+                    relheight: true,
+                    relwidth: true,
+                    height: 1,
+                    width: 1,
+                    minimized: false,
+                    fulldragboard: false,
+                    titlevisible: true
+                }],
                 titlevisible: true
             }, data);
 
@@ -637,10 +655,10 @@
                  * @type {Boolean}
                  */
                 minimized: {
-                    get: function() {
+                    get: function () {
                         return privates.get(this).currentLayoutConfiguration.minimized;
                     },
-                    set: function(value) {
+                    set: function (value) {
                         privates.get(this).currentLayoutConfiguration.minimized = value;
                     }
                 },

@@ -258,7 +258,7 @@
          * resolved, or an Error if rejected.
          */
         createWidget(resource, options) {
-            const layoutConfigs = utils.clone(this.model.preferences.get('screenSizes'));
+            const layoutConfigs = utils.clone(this.model.preferences.get('screenSizes'), true);
 
             options = utils.merge({
                 commit: true,
@@ -266,6 +266,7 @@
             }, options);
 
             layoutConfigs.forEach((layoutConfig) => {
+
                 Wirecloud.Utils.merge(layoutConfig, {
                     action: 'update',
                     width: resource.default_width,

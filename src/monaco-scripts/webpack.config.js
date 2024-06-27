@@ -28,6 +28,12 @@ module.exports = {
 	},
 	performance: {
 		maxEntrypointSize: 5 * 1024 * 1024, // 5 MiB
-    	maxAssetSize: 5 * 1024 * 1024 // 5 MiB
-	}
+		maxAssetSize: 5 * 1024 * 1024 // 5 MiB
+	},
+	cache: {
+		type: 'filesystem',
+		buildDependencies: {
+			config: [__filename],
+		},
+	},
 };

@@ -210,7 +210,13 @@ module.exports = function (grunt) {
             options: {
                 frameworks: ['jasmine'],
                 reporters: ['progress', 'coverage'],
-                browsers: ["ChromeHeadless"],
+                browsers: ["ChromeHeadlessCustom"],
+                customLaunchers: {
+                    ChromeHeadlessCustom: {
+                        base: 'ChromeHeadless',
+                        flags: ['--window-size=800,600']
+                    }
+                },
                 singleRun: true
             },
             styledelements: {

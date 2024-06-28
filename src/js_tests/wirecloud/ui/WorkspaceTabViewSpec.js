@@ -585,6 +585,11 @@
             });
 
             it("should define all screen sizes when creating a widget", (done) => {
+                Object.defineProperty(window, 'innerWidth', {
+                    value: 800,
+                    writable: true
+                });
+
                 const workspace = create_workspace();
                 const model = create_tab({
                     customPreferences: {

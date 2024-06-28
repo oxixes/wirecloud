@@ -61,6 +61,7 @@
 
             const newScreenSize = {
                 id: maxId + 1,
+                name: "Default-" + (maxId + 1),
                 moreOrEqual: (screenSizes.length > 0) ? screenSizes[screenSizes.length - 1].lessOrEqual + 1 : 0,
                 lessOrEqual: -1
             };
@@ -79,20 +80,18 @@
             this._update(screenSizes, false);
         }
 
-        on_valueChange(screenSizeId, from, value, update = true) {
-            const screenSizes = utils.clone(this.value, true);
+        on_valueChange(screenSizeId, from, value) {
+            const screenSizes = this.value;
 
             const screenSizeIdx = screenSizes.findIndex((screenSize) => screenSize.id === screenSizeId);
             screenSizes[screenSizeIdx][from] = value;
 
             if (from === 'moreOrEqual' && screenSizeIdx > 0) {
                 screenSizes[screenSizeIdx - 1].lessOrEqual = value - 1;
+                this.screenSizesInputs[screenSizes[screenSizeIdx - 1].id].children[2].children[1].inputElement.value = value - 1;
             } else if (from === 'lessOrEqual' && screenSizeIdx < screenSizes.length - 1) {
                 screenSizes[screenSizeIdx + 1].moreOrEqual = value + 1;
-            }
-
-            if (update) {
-                this._update(screenSizes, false);
+                this.screenSizesInputs[screenSizes[screenSizeIdx + 1].id].children[1].children[1].inputElement.value = value + 1;
             }
         }
 
@@ -175,6 +174,26 @@
             newValue.forEach((screenSize, i) => {
                 const screenSizeContainer = new StyledElements.Container();
 
+                const nameAddon = new se.Addon({
+                    text: utils.gettext('Name:'),
+                    title: utils.gettext('Name of the screen size range.')
+                });
+                nameAddon.setDisabled(!this.enabledStatus);
+
+                const nameInput = new se.TextField({
+                    name: 'name',
+                    initialValue: ('name' in screenSize) ? screenSize.name : 'Default-' + screenSize.id
+                });
+                nameInput.setDisabled(!this.enabledStatus);
+
+                nameInput.addEventListener('change', () => {
+                    this.on_valueChange(screenSize.id, 'name', nameInput.getValue());
+                });
+
+                const nameContainer = new se.Container({class: 'se-input-group se-screen-size-name'});
+                nameContainer.appendChild(nameAddon);
+                nameContainer.appendChild(nameInput);
+
                 const fromAddon = new se.Addon({
                     text: utils.gettext('From (px):'),
                     title: utils.gettext('The left limit of the screen size range (in pixels).')
@@ -190,7 +209,7 @@
                 });
 
                 if (moreOrEqualVal !== screenSize.moreOrEqual) {
-                    this.on_valueChange(screenSize.id, 'moreOrEqual', moreOrEqualVal, false);
+                    this.on_valueChange(screenSize.id, 'moreOrEqual', moreOrEqualVal);
                     screenSize.moreOrEqual = moreOrEqualVal;
                 }
 
@@ -218,7 +237,7 @@
                 });
 
                 if (lessOrEqualVal !== screenSize.lessOrEqual) {
-                    this.on_valueChange(screenSize.id, 'lessOrEqual', lessOrEqualVal, false);
+                    this.on_valueChange(screenSize.id, 'lessOrEqual', lessOrEqualVal);
                     screenSize.lessOrEqual = lessOrEqualVal;
                 }
 
@@ -244,7 +263,7 @@
                     this._callEvent('requestSave', () => {
                         if (!err) {
                             Wirecloud.activeWorkspace.view.activeTab.quitEditingInterval();
-                            Wirecloud.activeWorkspace.view.activeTab.setEditingInterval(screenSize.moreOrEqual, screenSize.lessOrEqual);
+                            Wirecloud.activeWorkspace.view.activeTab.setEditingInterval(screenSize.moreOrEqual, screenSize.lessOrEqual, screenSize.name);
                         }
                     });
                 });
@@ -256,6 +275,7 @@
                 buttonContainer.appendChild(editScreenSizeButton);
                 buttonContainer.appendChild(deleteButton);
 
+                screenSizeContainer.appendChild(nameContainer);
                 screenSizeContainer.appendChild(fromContainer);
                 screenSizeContainer.appendChild(toContainer);
                 screenSizeContainer.appendChild(buttonContainer);

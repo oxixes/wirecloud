@@ -100,7 +100,7 @@
             this.inputElement.addEventListener("blur", onblur.bind(this), true);
             this.inputElement.addEventListener("keydown", utils.stopInputKeydownPropagationListener, false);
 
-            this.inputElement.addEventListener("change", (e) => {
+            this.inputElement.addEventListener("input", (e) => {
                 this.dispatchEvent('change', e);
             });
 

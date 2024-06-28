@@ -447,6 +447,7 @@ class WirecloudCorePlugin(WirecloudPlugin):
                     {
                         "moreOrEqual": 0,
                         "lessOrEqual": -1,
+                        "name": "Default",
                         "id": 0
                     }
                 ],

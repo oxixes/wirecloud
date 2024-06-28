@@ -348,15 +348,14 @@
             );
         }
 
-        setEditingInterval(moreOrEqual, lessOrEqual) {
+        setEditingInterval(moreOrEqual, lessOrEqual, name) {
             let avgScreenSize = Math.floor((moreOrEqual + lessOrEqual) / 2);
             if (lessOrEqual === -1) {
                 avgScreenSize = moreOrEqual;
             }
             this.dragboard.setCustomDragboardWidth(avgScreenSize);
 
-            const intervalString = "[" + moreOrEqual + ", " + (lessOrEqual === -1 ? "+∞)" : lessOrEqual + "]");
-            const text = utils.interpolate(utils.gettext("Currently editing for screen sizes %(interval)s"), {interval: intervalString});
+            const text = utils.interpolate(utils.gettext("Currently editing for screen size %(name)s"), {name: name});
 
             const div = document.createElement('div');
             div.className = 'wc-editing-interval';

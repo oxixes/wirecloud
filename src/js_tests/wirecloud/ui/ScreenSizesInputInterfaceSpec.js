@@ -119,42 +119,50 @@
             expect(field._checkValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": -1,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 0,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }])).toBe(se.InputValidationError.SCREEN_SIZES_ERROR);
 
             expect(field._checkValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 802,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }])).toBe(se.InputValidationError.SCREEN_SIZES_ERROR);
 
             expect(field._checkValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 700,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }])).toBe(se.InputValidationError.SCREEN_SIZES_ERROR);
 
             expect(field._checkValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }])).toBe(se.InputValidationError.SCREEN_SIZES_ERROR);
 
             expect(field._checkValue([{
                 "moreOrEqual": 1,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 0
             }])).toBe(se.InputValidationError.SCREEN_SIZES_ERROR);
         });
@@ -164,16 +172,19 @@
             expect(field._checkValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": -1,
+                "name": "Default",
                 "id": 0
             }])).toBe(se.InputValidationError.NO_ERROR);
 
             expect(field._checkValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 801,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }])).toBe(se.InputValidationError.NO_ERROR);
         });
@@ -187,10 +198,12 @@
             const value = [{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 801,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }];
 
@@ -203,10 +216,12 @@
             const value = [{
                 "moreOrEqual": 801,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }, {
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }];
 
@@ -214,10 +229,12 @@
             expect(field.getValue()).toEqual([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 801,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }]);
         });
@@ -231,6 +248,7 @@
             field._setValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }]);
 
@@ -239,10 +257,12 @@
             expect(field.getValue()).toEqual([{
                 "moreOrEqual": 0,
                 "lessOrEqual": -1,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 0,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }]);
         });
@@ -256,10 +276,12 @@
             field.setValue([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 801,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }]);
 
@@ -268,6 +290,7 @@
             expect(field.getValue()).toEqual([{
                 "moreOrEqual": 0,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }]);
         });
@@ -281,10 +304,12 @@
             const value = [{
                 "moreOrEqual": 0,
                 "lessOrEqual": 800,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 801,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }];
 
@@ -294,10 +319,12 @@
             expect(JSON.stringify(field.getValue())).toBe(JSON.stringify([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 99,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 100,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }]));
 
@@ -306,10 +333,12 @@
             expect(field.getValue()).toEqual([{
                 "moreOrEqual": 0,
                 "lessOrEqual": 1000,
+                "name": "Default",
                 "id": 0
             }, {
                 "moreOrEqual": 1001,
                 "lessOrEqual": -1,
+                "name": "Default-1",
                 "id": 1
             }]);
         });

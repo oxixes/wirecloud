@@ -40,8 +40,6 @@ def get_workspace_description(workspace):
 
     return get_iwidgets_description(included_iwidgets)
 
-
-# TODO Adrian handle multiple screen sizes
 def process_iwidget(workspace, iwidget, wiring, parametrization, readOnlyWidgets, cache_manager):
 
     widget = iwidget.widget

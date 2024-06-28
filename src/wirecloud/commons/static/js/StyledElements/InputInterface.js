@@ -136,20 +136,20 @@
         }
 
         /**
-         * @private
-         *
          * Must be implemented by child classes. This method checks that the given value
          * is valid for this <code>InputInterface</code>. Things as checking if the
          * value is empty but required is out of scope of this method.
+         *
+         * @private
          */
         _checkValue(newValue) {
             return se.InputValidationError.NO_ERROR;
         }
 
         /**
-         * @private
-         *
          * Calls the event listeners for the given event type.
+         *
+         * @private
          */
         _callEvent(type, event) {
             if (type in this._eventListeners) {

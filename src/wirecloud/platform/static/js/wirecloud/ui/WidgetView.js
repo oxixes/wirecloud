@@ -111,17 +111,12 @@
         const tabChange = priv.tab !== newLayout.dragboard.tab;
         const dragboardChange = this.layout.dragboard !== newLayout.dragboard || tabChange;
 
-        if (!('layoutConfigurations' in this.model)) { // Tests may not have this method
-            return;
-        }
-
         layoutConfigurations.forEach((layoutConfiguration) => {
             if (this.layout instanceof Wirecloud.ui.FullDragboardLayout || newLayout instanceof Wirecloud.ui.FullDragboardLayout) {
                 // Skip if coming from or going to a FullDragboardLayout
                 return;
             }
 
-            // const newLayoutConfiguration = StyledElements.Utils.clone(layoutConfiguration, true);
             const newLayoutConfiguration = layoutConfiguration;
 
             let avgScreenSize = layoutConfiguration.lessOrEqual + (layoutConfiguration.moreOrEqual - layoutConfiguration.lessOrEqual) / 2;
@@ -255,10 +250,8 @@
                     set: function (new_layout) {
                         privates.get(this).layout = new_layout;
                         const fulldragboard = new_layout instanceof Wirecloud.ui.FullDragboardLayout;
-                        if ('setLayoutFulldragboard' in this.model) { // Tests may not have this method
-                            this.model.setLayoutFulldragboard(fulldragboard);
-                        }
-                        if (!fulldragboard && new_layout != null && 'setLayoutIndex' in this.model) {
+                        this.model.setLayoutFulldragboard(fulldragboard);
+                        if (!fulldragboard && new_layout != null) {
                             this.model.setLayoutIndex(new_layout.dragboard.layouts.indexOf(new_layout));
                         }
                         update.call(this);
@@ -869,8 +862,7 @@
 
             // We keep all or only the current layout configuration and then we clone it to add the action
             const configs = this.model.layoutConfigurations.reduce((result, layoutConfig) => {
-                if ((allLayoutConfigurations && layoutConfig.id !== this.model.currentLayoutConfig.id) ||
-                        layoutConfig.id === this.model.currentLayoutConfig.id) {
+                if (allLayoutConfigurations || layoutConfig.id === this.model.currentLayoutConfig.id) {
                     const config = StyledElements.Utils.clone(layoutConfig, true);
                     config.action = action;
                     result.push(config);

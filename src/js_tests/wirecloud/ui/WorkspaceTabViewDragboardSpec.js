@@ -45,7 +45,8 @@
                     id: 8
                 },
                 restricted: false
-            }
+            },
+            quitEditingInterval: jasmine.createSpy("quitEditingInterval")
         };
     };
 
@@ -571,7 +572,7 @@
 
         });
 
-        describe("update([ids])", () => {
+        describe("update([ids, allLayoutConfigurations])", () => {
 
             let dragboard, widget1, widget2, widget3;
 
@@ -662,6 +663,24 @@
                 }, fail);
             });
 
+            it("should honor the allLayoutConfigurations parameter", (done) => {
+                spyOn(Wirecloud.io, "makeRequest").and.callFake((url, options) => {
+                    return new Wirecloud.Task("Sending request", (resolve) => {resolve({status: 204});});
+                });
+
+                dragboard.tab.widgetsById["1"].toJSON = jasmine.createSpy("toJSON").and.returnValue({"hello": "world"});
+
+                const p = dragboard.update(null, true);
+                expect(dragboard.tab.widgetsById["1"].toJSON).toHaveBeenCalledWith('update', true);
+
+                p.then(() => {
+                    expect(Wirecloud.io.makeRequest).toHaveBeenCalled();
+                    const body = JSON.parse(Wirecloud.io.makeRequest.calls.argsFor(0)[1].postBody);
+                    expect(body.length).toBe(3);
+                    done();
+                }, fail);
+            });
+
             it("handles unexpected responses", (done) => {
 
                 spyOn(Wirecloud.io, "makeRequest").and.callFake(function (url, options) {
@@ -710,6 +729,29 @@
                     }
                 );
 
+            });
+
+        });
+
+        describe("refreshPositionBasedOnZIndex()", () => {
+
+            it("should sort widgets by z-index", () => {
+                const tab = create_tab();
+                const dragboard = new ns.WorkspaceTabViewDragboard(tab);
+
+                Array.prototype.push.apply(dragboard.widgets, [
+                    {position: {z: 2}},
+                    {position: {z: 1}},
+                    {position: {z: 3}}
+                ]);
+
+                dragboard.refreshPositionBasedOnZIndex();
+
+                expect(dragboard.widgets).toEqual([
+                    {position: {z: 1}},
+                    {position: {z: 2}},
+                    {position: {z: 3}}
+                ]);
             });
 
         });

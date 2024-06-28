@@ -492,11 +492,11 @@
         }
 
         /**
-         * @private
-         *
          * This function is slow. Please, only call it when really necessary.
          *
          * Updates the width and height info for this dragboard.
+         *
+         * @private
          */
         _recomputeSize() {
             const cssStyle = document.defaultView.getComputedStyle(this.tab.wrapperElement, null);
@@ -505,23 +505,23 @@
             }
 
             // Read padding values
-            this.topMargin = cssStyle.getPropertyCSSValue("padding-top").getFloatValue(CSSPrimitiveValue.CSS_PX);
-            this.bottomMargin = cssStyle.getPropertyCSSValue("padding-bottom").getFloatValue(CSSPrimitiveValue.CSS_PX);
-            this.leftMargin = cssStyle.getPropertyCSSValue("padding-left").getFloatValue(CSSPrimitiveValue.CSS_PX);
-            this.rightMargin = cssStyle.getPropertyCSSValue("padding-right").getFloatValue(CSSPrimitiveValue.CSS_PX);
+            this.topMargin = parseFloat(cssStyle.getPropertyValue("padding-top"));
+            this.bottomMargin = parseFloat(cssStyle.getPropertyValue("padding-bottom"));
+            this.leftMargin = parseFloat(cssStyle.getPropertyValue("padding-left"));
+            this.rightMargin = parseFloat(cssStyle.getPropertyValue("padding-right"));
 
             this.dragboardWidth = parseInt(this.tab.wrapperElement.offsetWidth, 10) - this.leftMargin - this.rightMargin;
             this.dragboardHeight = parseInt(this.tab.wrapperElement.parentNode.clientHeight, 10) - this.topMargin - this.bottomMargin;
         }
 
         /**
-         * @private
-         *
          * This method forces recomputing of the iWidgets' sizes.
          *
          * @param {boolean} widthChanged
          * @param {boolean} heightChanged
-         */
+         *
+         * @private
+        */
         _updateIWidgetSizes(widthChanged, heightChanged) {
             this.baseLayout._notifyWindowResizeEvent(widthChanged, heightChanged);
             this.freeLayout._notifyWindowResizeEvent(widthChanged, heightChanged);

@@ -73,7 +73,6 @@
                 class: "se-alert-body"
             });
             body.appendChild(options.message).insertInto(this.wrapperElement);
-            this.body = body;
 
             Object.defineProperties(this, {
                 heading: {value: heading},

@@ -283,6 +283,10 @@
                     avgScreenSize = layoutConfig.moreOrEqual;
                 }
 
+                if (window.innerWidth >= layoutConfig.moreOrEqual && (layoutConfig.lessOrEqual === -1 || window.innerWidth <= layoutConfig.lessOrEqual)) {
+                    avgScreenSize = window.innerWidth;
+                }
+
                 const layouts = [
                     this.dragboard.baseLayout,
                     this.dragboard.freeLayout,

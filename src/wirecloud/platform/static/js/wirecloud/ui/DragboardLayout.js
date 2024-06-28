@@ -35,10 +35,10 @@
     };
 
     /**
-     * @private
-     *
      * Checks that the given widget has a minimal size. This check is performed using
      * widget content size.
+     *
+     * @private
      */
     const ensureMinimalSize = function ensureMinimalSize(widget, persist) {
         const minWidth = Math.ceil(this.fromPixelsToHCells(80));
@@ -260,10 +260,10 @@
         }
 
         /**
-         * @private
-         *
          * This function should be called at the end of the implementation of addWidget.
-         */
+         *
+         * @private
+        */
         _adaptIWidget(widget) {
             if (widget.element != null) {
                 ensureMinimalSize.call(this, widget, false);

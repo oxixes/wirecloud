@@ -304,7 +304,7 @@
                     expect(id).toBe(80);
                     return widget;
                 });
-                tab.dragboard.freeLayout.searchBestPosition = jasmine.createSpy("searchBestPosition").and.returnValue({x: 1, y: 2});
+                tab.dragboard.freeLayout.searchBestPosition = jasmine.createSpy("searchBestPosition");
 
                 const created_widget = tab.createWidget(
                     {
@@ -580,6 +580,52 @@
 
                 p.then((created_widget) => {
                     expect(created_widget).toBe(widget);
+                    done();
+                });
+            });
+
+            it("should define all screen sizes when creating a widget", (done) => {
+                const workspace = create_workspace();
+                const model = create_tab({
+                    customPreferences: {
+                        screenSizes: [
+                            {id: 0, moreOrEqual: 0, lessOrEqual: 800},
+                            {id: 1, moreOrEqual: 801, lessOrEqual: 1000},
+                            {id: 2, moreOrEqual: 1001, lessOrEqual: -1}
+                        ]
+                    }
+                });
+                const tab = new ns.WorkspaceTabView("1", notebook, {
+                    model: model,
+                    workspace: workspace
+                });
+
+                const widgetmodel = {id: 80};
+                model.createWidget.and.returnValue(Promise.resolve(widgetmodel));
+                const widget = {id: 80};
+                spyOn(tab, "findWidget").and.callFake((id) => {
+                    expect(id).toBe(80);
+                    return widget;
+                });
+
+                tab.dragboard.freeLayout.searchBestPosition = jasmine.createSpy("searchBestPosition");
+
+                const p = tab.createWidget(
+                    {
+                        default_height: "120px",
+                        default_width: "120px"
+                    }, {
+                        layout: 1,
+                        refposition: document.createElement('div')
+                    }
+                );
+
+                p.then((created_widget) => {
+                    expect(created_widget).toBe(widget);
+                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledTimes(3);
+                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), 800);
+                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), 900.5);
+                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), 1001);
                     done();
                 });
             });

@@ -49,7 +49,7 @@
         }
 
         on_addScreenSize() {
-            const screenSizes = utils.clone(this.value);
+            const screenSizes = utils.clone(this.value, true);
 
             // Get max id
             let maxId = 0;
@@ -61,7 +61,7 @@
 
             const newScreenSize = {
                 id: maxId + 1,
-                moreOrEqual: screenSizes[screenSizes.length - 1].lessOrEqual + 1,
+                moreOrEqual: (screenSizes.length > 0) ? screenSizes[screenSizes.length - 1].lessOrEqual + 1 : 0,
                 lessOrEqual: -1
             };
 
@@ -71,7 +71,7 @@
         }
 
         on_deleteScreenSize(screenSizeId) {
-            const screenSizes = utils.clone(this.value);
+            const screenSizes = utils.clone(this.value, true);
 
             const index = screenSizes.findIndex((screenSize) => screenSize.id === screenSizeId);
             screenSizes.splice(index, 1);
@@ -80,7 +80,7 @@
         }
 
         on_valueChange(screenSizeId, from, value, update = true) {
-            const screenSizes = utils.clone(this.value);
+            const screenSizes = utils.clone(this.value, true);
 
             const screenSizeIdx = screenSizes.findIndex((screenSize) => screenSize.id === screenSizeId);
             screenSizes[screenSizeIdx][from] = value;
@@ -110,19 +110,24 @@
 
         _checkValue(newValue) {
             // Check that the newValue covers all integers from [0, +inf) without gaps or overlaps
-            const screenSizes = utils.clone(newValue);
+            const screenSizes = utils.clone(newValue, true);
+
+            if (!Array.isArray(screenSizes) || screenSizes.length === 0) {
+                return se.InputValidationError.SCREEN_SIZES_ERROR;
+            }
+
             screenSizes.sort((a, b) => a.moreOrEqual - b.moreOrEqual);
 
             let lastLessOrEqual = -1;
             for (let i = 0; i < screenSizes.length; i++) {
-                if (screenSizes[i].moreOrEqual != lastLessOrEqual + 1 || (i != screenSizes.length - 1 && screenSizes[i].lessOrEqual <= screenSizes[i].moreOrEqual)) {
+                if (screenSizes[i].moreOrEqual !== lastLessOrEqual + 1 || (i !== screenSizes.length - 1 && screenSizes[i].lessOrEqual <= screenSizes[i].moreOrEqual)) {
                     return se.InputValidationError.SCREEN_SIZES_ERROR;
                 }
 
                 lastLessOrEqual = screenSizes[i].lessOrEqual;
             }
 
-            if (lastLessOrEqual != -1) {
+            if (lastLessOrEqual !== -1) {
                 return se.InputValidationError.SCREEN_SIZES_ERROR;
             }
 
@@ -186,6 +191,7 @@
 
                 if (moreOrEqualVal !== screenSize.moreOrEqual) {
                     this.on_valueChange(screenSize.id, 'moreOrEqual', moreOrEqualVal, false);
+                    screenSize.moreOrEqual = moreOrEqualVal;
                 }
 
                 moreOrEqualInput.setDisabled(i === 0 || !this.enabledStatus);
@@ -213,6 +219,7 @@
 
                 if (lessOrEqualVal !== screenSize.lessOrEqual) {
                     this.on_valueChange(screenSize.id, 'lessOrEqual', lessOrEqualVal, false);
+                    screenSize.lessOrEqual = lessOrEqualVal;
                 }
 
                 lessOrEqualInput.setDisabled(i === newValue.length - 1 || !this.enabledStatus);

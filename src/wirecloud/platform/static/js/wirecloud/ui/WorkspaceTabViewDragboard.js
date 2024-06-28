@@ -20,7 +20,7 @@
  *
  */
 
-/* globals CSSPrimitiveValue, Wirecloud */
+/* globals Wirecloud */
 
 
 (function (ns, utils) {

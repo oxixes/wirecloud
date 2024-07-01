@@ -46,6 +46,8 @@
 
             this._update(this.value);
             this.addButton.setDisabled(!this.enabledStatus);
+
+            this.highestIdUsed = 0;
         }
 
         on_addScreenSize() {
@@ -59,12 +61,16 @@
                 }
             });
 
+            maxId = Math.max(maxId, this.highestIdUsed);
+
             const newScreenSize = {
                 id: maxId + 1,
                 name: "Default-" + (maxId + 1),
                 moreOrEqual: (screenSizes.length > 0) ? screenSizes[screenSizes.length - 1].lessOrEqual + 1 : 0,
                 lessOrEqual: -1
             };
+
+            this.highestIdUsed = newScreenSize.id;
 
             screenSizes.push(newScreenSize);
 
@@ -150,6 +156,11 @@
 
         _setValue(newValue) {
             this._update(newValue);
+            newValue.forEach((screenSize) => {
+                if (screenSize.id > this.highestIdUsed) {
+                    this.highestIdUsed = screenSize.id;
+                }
+            });
         }
 
         _update(newValue, sort = true) {

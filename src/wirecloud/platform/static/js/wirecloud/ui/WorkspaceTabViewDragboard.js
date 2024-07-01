@@ -330,7 +330,7 @@
                     layoutConfigurations: []
                 };
 
-                const indexesToDelete = [];
+                let indexesToDelete = [];
                 currentConfigs.forEach((config, i) => {
                     if (updatedScreenSizes.findIndex((screenSize) => screenSize.id === config.id) === -1) {
                         widgetReqData.layoutConfigurations.push({
@@ -342,9 +342,13 @@
                 });
 
                 indexesToDelete.sort((a, b) => b - a);
-                indexesToDelete.forEach((index) => {
-                    currentConfigs.splice(index, 1);
-                });
+
+                if (indexesToDelete.length !== currentConfigs.length) {
+                    indexesToDelete.forEach((index) => {
+                        currentConfigs.splice(index, 1);
+                    });
+                    indexesToDelete = [];
+                }
 
                 const lastExistingScreenSize = currentConfigs[currentConfigs.length - 1];
                 updatedScreenSizes.forEach((screenSize) => {
@@ -396,6 +400,10 @@
                             widgetReqData.layoutConfigurations.push(updatedConfig);
                         }
                     }
+                });
+
+                indexesToDelete.forEach((index) => {
+                    currentConfigs.splice(index, 1);
                 });
 
                 // After modifying all the layoutConfigurations, we need to sort them by moreOrEqual and call the updateWindowSize method

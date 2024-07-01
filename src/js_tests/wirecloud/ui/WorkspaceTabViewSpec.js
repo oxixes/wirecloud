@@ -935,6 +935,61 @@
 
         });
 
+        describe("setEditingInterval(moreOrEqual, lessOrEqual, name)", () => {
+
+            it("should set the editing interval", () => {
+                const workspace = create_workspace();
+                const model = create_tab();
+                const tab = new ns.WorkspaceTabView("1", notebook, {
+                    model: model,
+                    workspace: workspace
+                });
+
+                tab.dragboard.setCustomDragboardWidth = jasmine.createSpy("setCustomDragboardWidth");
+
+                tab.setEditingInterval(0, 10, "name");
+                expect(tab.dragboard.setCustomDragboardWidth).toHaveBeenCalledWith(5);
+                tab.quitEditingInterval = jasmine.createSpy("quitEditingInterval");
+
+                tab.intervalEditionIndicator.querySelector(".wc-editing-interval-close").click();
+
+                expect(tab.quitEditingInterval).toHaveBeenCalled();
+
+                tab.setEditingInterval(10, -1, "name");
+                expect(tab.dragboard.setCustomDragboardWidth).toHaveBeenCalledWith(10);
+            });
+
+        });
+
+        describe("quitEditingInterval()", () => {
+
+            it("should quit the editing interval", () => {
+                const workspace = create_workspace();
+                const model = create_tab();
+                const tab = new ns.WorkspaceTabView("1", notebook, {
+                    model: model,
+                    workspace: workspace
+                });
+
+                tab.dragboard.restoreDragboardWidth = jasmine.createSpy("restoreDragboardWidth");
+
+                tab.quitEditingInterval();
+
+                expect(tab.dragboard.restoreDragboardWidth).toHaveBeenCalled();
+
+                const intervalEditionIndicator = {
+                    remove: jasmine.createSpy("remove")
+                };
+
+                tab.intervalEditionIndicator = intervalEditionIndicator;
+                tab.quitEditingInterval();
+
+                expect(intervalEditionIndicator.remove).toHaveBeenCalled();
+                expect(tab.intervalEditionIndicator).toBe(null);
+            });
+
+        });
+
     });
 
 })(Wirecloud.ui, StyledElements.Utils);

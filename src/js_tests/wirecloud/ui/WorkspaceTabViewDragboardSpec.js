@@ -67,7 +67,9 @@
         return {
             id: options.id,
             model: {
-                volatile: !!options.volatile
+                volatile: !!options.volatile,
+                layoutConfigurations: options.layoutConfigurations || [],
+                id: options.id
             },
             persist: jasmine.createSpy("persist"),
             position: {
@@ -76,6 +78,7 @@
             setPosition: jasmine.createSpy("setPosition").and.callFake(function (options) {
                 this.position.z = options.z;
             }),
+            updateWindowSize: jasmine.createSpy("updateWindowSize"),
             toJSON: function () {}
         };
     };
@@ -83,6 +86,7 @@
     const layout_constructor = function () {
         this.initialize = jasmine.createSpy("initialize");
         this.moveTo = jasmine.createSpy("moveTo");
+        this.isActive = jasmine.createSpy("isActive").and.returnValue(true);
         this._notifyWindowResizeEvent = jasmine.createSpy("_notifyWindowResizeEvent");
     };
 
@@ -568,6 +572,301 @@
                 expect(dragboard.baseLayout._notifyWindowResizeEvent).toHaveBeenCalledWith(true, false);
                 expect(dragboard.freeLayout._notifyWindowResizeEvent).toHaveBeenCalledWith(true, false);
                 expect(dragboard.fulldragboardLayout._notifyWindowResizeEvent).toHaveBeenCalledWith(true, false);
+            });
+
+        });
+
+        describe("_updateScreenSizes", () => {
+
+            it("should delete non-existent screen sizes, update those that exist and add new ones", (done) => {
+                spyOn(Wirecloud.io, "makeRequest").and.callFake((url, options) => {
+                    return new Wirecloud.Task("Sending request", (resolve) => {resolve({status: 204});});
+                });
+
+                const tab = create_tab();
+                const dragboard = new ns.WorkspaceTabViewDragboard(tab);
+
+                dragboard.resetLayouts = jasmine.createSpy("resetLayouts");
+                dragboard.refreshPositionBasedOnZIndex = jasmine.createSpy("refreshPositionBasedOnZIndex");
+                dragboard.paint = jasmine.createSpy("paint");
+
+                const widget = create_widget({
+                    id: 3,
+                    layoutConfigurations: [
+                        {
+                            id: 0,
+                            moreOrEqual: 0,
+                            lessOrEqual: 800,
+                            anchor: "top-left",
+                            width: 10,
+                            height: 10,
+                            relwidth: true,
+                            relheight: true,
+                            left: 0,
+                            top: 0,
+                            zIndex: 0,
+                            relx: true,
+                            rely: true,
+                            titlevisible: true,
+                            fulldragboard: false,
+                            minimized: false
+                        },
+                        {
+                            id: 1,
+                            moreOrEqual: 801,
+                            lessOrEqual: -1,
+                            anchor: "top-left",
+                            width: 10,
+                            height: 10,
+                            relwidth: true,
+                            relheight: true,
+                            left: 0,
+                            top: 0,
+                            zIndex: 0,
+                            relx: true,
+                            rely: true,
+                            titlevisible: true,
+                            fulldragboard: false,
+                            minimized: false
+                        }
+                    ]
+                });
+
+                dragboard._addWidget(widget);
+
+                tab.model.preferences.get = jasmine.createSpy("get").and.returnValue([
+                    {
+                        id: 1,
+                        moreOrEqual: 0,
+                        lessOrEqual: 800,
+                        name: "Default-1"
+                    },
+                    {
+                        id: 2,
+                        moreOrEqual: 801,
+                        lessOrEqual: -1,
+                        name: "Default-2"
+                    }
+                ]);
+
+                const p = dragboard._updateScreenSizes();
+
+                p.then(() => {
+                    expect(Wirecloud.io.makeRequest).toHaveBeenCalled();
+                    expect(dragboard.resetLayouts).toHaveBeenCalled();
+                    expect(dragboard.refreshPositionBasedOnZIndex).toHaveBeenCalled();
+                    expect(dragboard.paint).toHaveBeenCalled();
+                    const body = JSON.parse(Wirecloud.io.makeRequest.calls.argsFor(0)[1].postBody);
+                    expect(body).toEqual([{
+                        id: 3,
+                        layoutConfigurations: [
+                            {
+                                id: 0,
+                                action: 'delete'
+                            },
+                            {
+                                id: 1,
+                                action: 'update',
+                                moreOrEqual: 0,
+                                lessOrEqual: 800
+                            },
+                            {
+                                id: 2,
+                                action: 'update',
+                                moreOrEqual: 801,
+                                lessOrEqual: -1,
+                                anchor: "top-left",
+                                width: 10,
+                                height: 10,
+                                relwidth: true,
+                                relheight: true,
+                                left: 0,
+                                top: 0,
+                                zIndex: 0,
+                                relx: true,
+                                rely: true,
+                                titlevisible: true,
+                                fulldragboard: false,
+                                minimized: false
+                            }
+                        ]
+                    }]);
+                    done();
+                });
+            });
+
+            it("should not update a layout configuration if it has not changed", (done) => {
+                spyOn(Wirecloud.io, "makeRequest").and.callFake((url, options) => {
+                    return new Wirecloud.Task("Sending request", (resolve) => {resolve({status: 204});});
+                });
+
+                const tab = create_tab();
+                const dragboard = new ns.WorkspaceTabViewDragboard(tab);
+
+                dragboard.resetLayouts = jasmine.createSpy("resetLayouts");
+                dragboard.refreshPositionBasedOnZIndex = jasmine.createSpy("refreshPositionBasedOnZIndex");
+                dragboard.paint = jasmine.createSpy("paint");
+
+                const widget = create_widget({
+                    id: 3,
+                    layoutConfigurations: [
+                        {
+                            id: 0,
+                            moreOrEqual: 0,
+                            lessOrEqual: 800,
+                            anchor: "top-left",
+                            width: 10,
+                            height: 10,
+                            relwidth: true,
+                            relheight: true,
+                            left: 0,
+                            top: 0,
+                            zIndex: 0,
+                            relx: true,
+                            rely: true,
+                            titlevisible: true,
+                            fulldragboard: false,
+                            minimized: false
+                        }
+                    ]
+                });
+
+                dragboard._addWidget(widget);
+
+                tab.model.preferences.get = jasmine.createSpy("get").and.returnValue([
+                    {
+                        id: 0,
+                        moreOrEqual: 0,
+                        lessOrEqual: 800,
+                        name: "Default-1"
+                    }
+                ]);
+
+                const p = dragboard._updateScreenSizes();
+
+                p.then(() => {
+                    expect(Wirecloud.io.makeRequest).toHaveBeenCalled();
+                    expect(dragboard.resetLayouts).toHaveBeenCalled();
+                    expect(dragboard.refreshPositionBasedOnZIndex).toHaveBeenCalled();
+                    expect(dragboard.paint).toHaveBeenCalled();
+                    const body = JSON.parse(Wirecloud.io.makeRequest.calls.argsFor(0)[1].postBody);
+                    expect(body).toEqual([{
+                        id: 3,
+                        layoutConfigurations: []
+                    }]);
+                    done();
+                });
+            });
+
+            it("should quit the editing interval if custom screen sizes are used", (done) => {
+                spyOn(Wirecloud.io, "makeRequest").and.callFake((url, options) => {
+                    return new Wirecloud.Task("Sending request", (resolve) => {resolve({status: 204});});
+                });
+
+                const tab = create_tab();
+                const dragboard = new ns.WorkspaceTabViewDragboard(tab);
+                dragboard.customWidth = 800;
+
+                dragboard.resetLayouts = jasmine.createSpy("resetLayouts");
+                dragboard.refreshPositionBasedOnZIndex = jasmine.createSpy("refreshPositionBasedOnZIndex");
+                dragboard.paint = jasmine.createSpy("paint");
+
+                const widget = create_widget({
+                    id: 3,
+                    layoutConfigurations: [
+                        {
+                            id: 0,
+                            moreOrEqual: 0,
+                            lessOrEqual: 800,
+                            anchor: "top-left",
+                            width: 10,
+                            height: 10,
+                            relwidth: true,
+                            relheight: true,
+                            left: 0,
+                            top: 0,
+                            zIndex: 0,
+                            relx: true,
+                            rely: true,
+                            titlevisible: true,
+                            fulldragboard: false,
+                            minimized: false
+                        }
+                    ]
+                });
+
+                dragboard._addWidget(widget);
+
+                tab.model.preferences.get = jasmine.createSpy("get").and.returnValue([
+                    {
+                        id: 1,
+                        moreOrEqual: 0,
+                        lessOrEqual: 800,
+                        name: "Default-1"
+                    }
+                ]);
+
+                const p = dragboard._updateScreenSizes();
+
+                p.then(() => {
+                    expect(tab.quitEditingInterval).toHaveBeenCalled();
+                    done();
+                });
+            });
+
+            it("should handle unexpected responses", (done) => {
+                spyOn(Wirecloud.io, "makeRequest").and.callFake(function (url, options) {
+                    expect(options.method).toEqual("PUT");
+                    return new Wirecloud.Task("Sending request", function (resolve) {
+                        resolve({
+                            status: 201
+                        });
+                    });
+                });
+
+                const tab = create_tab();
+                const dragboard = new ns.WorkspaceTabViewDragboard(tab);
+                dragboard.paint = jasmine.createSpy("paint");
+
+                const task = dragboard._updateScreenSizes();
+
+                task.then(
+                    (value) => {
+                        fail("success callback called");
+                    },
+                    (error) => {
+                        expect(Wirecloud.io.makeRequest).toHaveBeenCalled();
+                        done();
+                    }
+                );
+            });
+
+            it("should handle error responses", (done) => {
+                spyOn(Wirecloud.io, "makeRequest").and.callFake(function (url, options) {
+                    expect(options.method).toEqual("PUT");
+                    return new Wirecloud.Task("Sending request", function (resolve) {
+                        resolve({
+                            status: 403
+                        });
+                    });
+                });
+
+                const tab = create_tab();
+                const dragboard = new ns.WorkspaceTabViewDragboard(tab);
+                dragboard.paint = jasmine.createSpy("paint");
+
+                const task = dragboard._updateScreenSizes();
+
+                task.then(
+                    (value) => {
+                        fail("success callback called");
+                    },
+                    (error) => {
+                        expect(Wirecloud.io.makeRequest).toHaveBeenCalled();
+                        done();
+                    }
+                );
+
             });
 
         });

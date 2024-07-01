@@ -41,7 +41,7 @@
                 const layout = new ns.SidebarLayout(dragboard);
 
                 // Check initial values
-                expect(layout.active).toBe(false);
+                expect(layout.isActive()).toBe(false);
                 expect(layout.position).toBe("left");
             });
 
@@ -56,8 +56,17 @@
                 const layout = new ns.SidebarLayout(dragboard, {position: "right"});
 
                 // Should init in inactive mode
-                expect(layout.active).toBe(false);
+                expect(layout.isActive()).toBe(false);
                 expect(layout.position).toBe("right");
+            });
+
+            it("should accept the active option", () => {
+                const dragboard = {};
+                const layout = new ns.SidebarLayout(dragboard, {active: true});
+
+                // Should init in active mode
+                expect(layout.isActive()).toBe(true);
+                expect(layout.position).toBe("left");
             });
 
         });
@@ -636,6 +645,21 @@
                 layout.handle.click();
 
                 expect(layout.active).toBe(false);
+            });
+
+        });
+
+        describe("removeHandle()", () => {
+
+            it("should work", () => {
+                const layout = new ns.SidebarLayout({});
+                layout.handle = {
+                    remove: jasmine.createSpy("remove")
+                }
+
+                layout.removeHandle();
+
+                expect(layout.handle.remove).toHaveBeenCalled();
             });
 
         });

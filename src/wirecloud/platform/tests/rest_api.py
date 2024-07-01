@@ -2403,6 +2403,89 @@ class ApplicationMashupAPI(WirecloudTestCase, TransactionTestCase):
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(isinstance(response_data, dict))
 
+    def test_iwidget_entry_post_invalid_screen_size(self):
+        url = reverse('wirecloud.iwidget_entry', kwargs={'workspace_id': 2, 'tab_id': 101, 'iwidget_id': 2})
+
+        # Authenticate
+        self.client.login(username='user_with_workspaces', password='admin')
+
+        # Make the requests
+        data = {'layoutConfigurations': [{'id': 0, 'action': 'update', 'moreOrEqual': -3}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+        data = {'layoutConfigurations': [{'id': 0, 'action': 'update', 'moreOrEqual': 'notavalidvalue'}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 400)
+
+        data = {'layoutConfigurations': [{'id': 0, 'action': 'update', 'moreOrEqual': 1}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+        data = {'layoutConfigurations': [{'id': 0, 'action': 'update', 'lessOrEqual': 1}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+        data = {'layoutConfigurations': [{'action': 'update'}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+        data = {'layoutConfigurations': [{'id': 0, 'lessOrEqual': 1}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+        data = {'layoutConfigurations': [{'id': 0, 'action': 'add', 'lessOrEqual': 1}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+        data = {'layoutConfigurations': [{'id': 0, 'action': 'update'}, {'id': 0, 'action': 'update'}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+    def test_iwidget_entry_post_delete_screen_size(self):
+        url = reverse('wirecloud.iwidget_entry', kwargs={'workspace_id': 2, 'tab_id': 101, 'iwidget_id': 2})
+        data = {'layoutConfigurations': [
+            {'id': 0, 'action': 'update', 'moreOrEqual': 0, 'lessOrEqual': 800},
+            {'id': 1, 'action': 'update', 'moreOrEqual': 801, 'lessOrEqual': -1}
+        ]}
+
+        # Authenticate
+        self.client.login(username='user_with_workspaces', password='admin')
+
+        # Make the requests
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 204)
+
+        data = {'layoutConfigurations': [{'id': 0, 'action': 'update', 'lessOrEqual': -1}, {'id': 1, 'action': 'delete'}]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 204)
+
+
+    def test_iwidget_entry_post_invalid_layout(self):
+        url = reverse('wirecloud.iwidget_entry', kwargs={'workspace_id': 2, 'tab_id': 101, 'iwidget_id': 2})
+
+        # Authenticate
+        self.client.login(username='user_with_workspaces', password='admin')
+
+        # Make the requests
+        data = {'layout': -3}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 422)
+
+    def test_iwidget_entry_post_valid_layout(self):
+        url = reverse('wirecloud.iwidget_entry', kwargs={'workspace_id': 2, 'tab_id': 101, 'iwidget_id': 2})
+
+        # Authenticate
+        self.client.login(username='user_with_workspaces', password='admin')
+
+        # Make the requests
+        data = {'layout': 0}
+        response = self.client.post(url, json.dumps(data), content_type='application/json; charset=UTF-8', HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, 204)
+
+        iwidget = IWidget.objects.get(pk=2)
+        self.assertEqual(iwidget.layout, 0)
+
     def check_iwidget_entry_post_invalid_position_value(self, field, value, error_code):
         url = reverse('wirecloud.iwidget_entry', kwargs={'workspace_id': 2, 'tab_id': 101, 'iwidget_id': 2})
 

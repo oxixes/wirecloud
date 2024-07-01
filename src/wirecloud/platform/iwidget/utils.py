@@ -127,9 +127,6 @@ def check_intervals(data):
     # The screen size intervals should cover the interval [0, +inf) and should not overlap nor have gaps,
     # each interval is defined by the properties 'moreOrEqual' and 'lessOrEqual'
 
-    if not isinstance(data, list) or not all(isinstance(i, dict) and ('moreOrEqual' in i and 'lessOrEqual' in i) for i in data):
-        raise ValueError('data must be a list of dictionaries with "moreOrEqual" and "lessOrEqual" keys')
-
     data.sort(key=lambda x: x.get('moreOrEqual', float('-inf')))
 
     if data[0].get('moreOrEqual') != 0:
@@ -143,9 +140,6 @@ def check_intervals(data):
         raise ValueError('The last interval must extend to infinity')
 
 def update_position(iwidget, key, data):
-    if not 'layoutConfigurations' in data:
-        raise ValueError('Missing layoutConfigurations field')
-
     # Check if we have duplicate ids in the layoutConfigurations
     ids = set()
     for layoutConfig in data["layoutConfigurations"]:

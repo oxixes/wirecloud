@@ -87,7 +87,7 @@
         }
 
         on_valueChange(screenSizeId, from, value) {
-            const screenSizes = this.value;
+            const screenSizes = utils.clone(this.value, true);
 
             const screenSizeIdx = screenSizes.findIndex((screenSize) => screenSize.id === screenSizeId);
             screenSizes[screenSizeIdx][from] = value;
@@ -99,6 +99,8 @@
                 screenSizes[screenSizeIdx + 1].moreOrEqual = value + 1;
                 this.screenSizesInputs[screenSizes[screenSizeIdx + 1].id].children[1].children[1].inputElement.value = value + 1;
             }
+
+            this.value = screenSizes;
         }
 
         static parse(value) {

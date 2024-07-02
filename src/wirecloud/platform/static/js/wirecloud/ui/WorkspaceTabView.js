@@ -366,7 +366,8 @@
             const a = document.createElement('a');
             a.className = 'far fa-times-circle wc-editing-interval-close';
             a.href = '#';
-            a.addEventListener('click', () => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
                 this.quitEditingInterval();
             });
             div.appendChild(a);

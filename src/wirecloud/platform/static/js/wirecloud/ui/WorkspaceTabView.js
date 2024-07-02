@@ -114,9 +114,27 @@
         this.prefbutton.enabled = this.workspace.editing;
     };
 
+    const get_editing_interval_name = function get_editing_interval_name(width) {
+        const screenSizes = this.model.preferences.get('screenSizes');
+        let editingIntervalName = null;
+        for (let i = 0; i < screenSizes.length; i++) {
+            if (screenSizes[i].moreOrEqual <= width && (screenSizes[i].lessOrEqual === -1 || screenSizes[i].lessOrEqual >= width)) {
+                editingIntervalName = screenSizes[i].name;
+                break;
+            }
+        }
+
+        return editingIntervalName;
+    }
+
     const on_windowresize = function on_windowresize() {
         if (this.dragboard.customWidth === -1) {
             this.dragboard.updateWidgetScreenSize(window.innerWidth);
+
+            if (this.workspace.activeTab === this) {
+                this.editingIntervalName = get_editing_interval_name.call(this, window.innerWidth);
+                this.workspace.updateEditingInterval(this.getEditingIntervalElement());
+            }
         }
     };
 
@@ -232,6 +250,7 @@
             }
 
             this.dragboard = new ns.WorkspaceTabViewDragboard(this);
+            this.updateEditingIntervalName();
 
             this.initialMessage = (new se.GUIBuilder()).parse(Wirecloud.currentTheme.templates['wirecloud/workspace/empty_tab_message'], {
                 button: this.workspace.buildAddWidgetButton.bind(this.workspace),
@@ -348,42 +367,51 @@
             );
         }
 
+        getEditingIntervalElement() {
+            let text = "";
+            if (this.dragboard.customWidth !== -1) {
+                text = utils.interpolate(utils.gettext("(Overriden) Editing for screen size %(name)s"), {name: this.editingIntervalName});
+            } else {
+                text = utils.interpolate(utils.gettext("Editing for screen size %(name)s"), {name: this.editingIntervalName});
+            }
+
+            const div = document.createElement('div');
+            const span = document.createElement('span');
+            span.textContent = text;
+            div.appendChild(span);
+
+            if (this.dragboard.customWidth !== -1) {
+                const a = document.createElement('a');
+                a.className = 'far fa-times-circle wc-editing-interval-close';
+                a.href = '#';
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.quitEditingInterval();
+                });
+                div.appendChild(a);
+            }
+
+            return div;
+        }
+
         setEditingInterval(moreOrEqual, lessOrEqual, name) {
             let avgScreenSize = Math.floor((moreOrEqual + lessOrEqual) / 2);
             if (lessOrEqual === -1) {
                 avgScreenSize = moreOrEqual;
             }
             this.dragboard.setCustomDragboardWidth(avgScreenSize);
-
-            const text = utils.interpolate(utils.gettext("Currently editing for screen size %(name)s"), {name: name});
-
-            const div = document.createElement('div');
-            div.className = 'wc-editing-interval';
-            const span = document.createElement('span');
-            span.textContent = text;
-            div.appendChild(span);
-
-            const a = document.createElement('a');
-            a.className = 'far fa-times-circle wc-editing-interval-close';
-            a.href = '#';
-            a.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.quitEditingInterval();
-            });
-            div.appendChild(a);
-
-            this.intervalEditionIndicator = div;
-
-            this.wrapperElement.appendChild(div);
+            this.editingIntervalName = name;
+            this.workspace.updateEditingInterval(this.getEditingIntervalElement());
         }
 
         quitEditingInterval() {
             this.dragboard.restoreDragboardWidth();
+            this.editingIntervalName = get_editing_interval_name.call(this, window.innerWidth);
+            this.workspace.updateEditingInterval(this.getEditingIntervalElement());
+        }
 
-            if (this.intervalEditionIndicator != null) {
-                this.intervalEditionIndicator.remove();
-                this.intervalEditionIndicator = null;
-            }
+        updateEditingIntervalName() {
+            this.editingIntervalName = get_editing_interval_name.call(this, (this.dragboard.customWidth === -1) ? window.innerWidth : this.dragboard.customWidth);
         }
 
         /**

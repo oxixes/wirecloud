@@ -44,10 +44,10 @@
             id: "8",
             preferences: {
                 get: jasmine.createSpy("get").and.callFake(function (key) {
-                    if (options && key in options.customPreferences) {
+                    if (options && options.customPreferences && key in options.customPreferences) {
                         return options.customPreferences[key];
                     } else if (key === "screenSizes") {
-                        return [{id: 0, moreOrEqual: 0, lessOrEqual: -1}];
+                        return [{id: 0, moreOrEqual: 0, lessOrEqual: -1, name: "Default"}];
                     }
                 }),
                 addEventListener: jasmine.createSpy("addEventListener")
@@ -84,6 +84,7 @@
         return {
             addEventListener: jasmine.createSpy("addEventListener"),
             buildAddWidgetButton: jasmine.createSpy("buildAddWidgetButton").and.returnValue(),
+            updateEditingInterval: jasmine.createSpy("updateEditingInterval"),
             model: workspace
         };
     };
@@ -935,6 +936,47 @@
 
         });
 
+        describe("getEditingIntervalElement()", () => {
+
+            it("should return the editing interval element without link if customWidth is -1", () => {
+                const workspace = create_workspace();
+                const model = create_tab();
+                const tab = new ns.WorkspaceTabView("1", notebook, {
+                    model: model,
+                    workspace: workspace
+                });
+
+                tab.dragboard.customWidth = -1;
+
+                const elem = tab.getEditingIntervalElement();
+
+                // It should NOT contain a link
+                expect(elem.querySelector('a')).toBe(null);
+            });
+
+            it("should return the editing interval element with link if customWidth is not -1", () => {
+                const workspace = create_workspace();
+                const model = create_tab();
+                const tab = new ns.WorkspaceTabView("1", notebook, {
+                    model: model,
+                    workspace: workspace
+                });
+
+                tab.dragboard.customWidth = 10;
+
+                const elem = tab.getEditingIntervalElement();
+
+                // It should contain a link
+                expect(elem.querySelector('a')).not.toBe(null);
+
+                tab.quitEditingInterval = jasmine.createSpy("quitEditingInterval");
+                elem.querySelector('a').click();
+
+                expect(tab.quitEditingInterval).toHaveBeenCalled();
+            });
+
+        });
+
         describe("setEditingInterval(moreOrEqual, lessOrEqual, name)", () => {
 
             it("should set the editing interval", () => {
@@ -949,11 +991,6 @@
 
                 tab.setEditingInterval(0, 10, "name");
                 expect(tab.dragboard.setCustomDragboardWidth).toHaveBeenCalledWith(5);
-                tab.quitEditingInterval = jasmine.createSpy("quitEditingInterval");
-
-                tab.intervalEditionIndicator.querySelector(".wc-editing-interval-close").click();
-
-                expect(tab.quitEditingInterval).toHaveBeenCalled();
 
                 tab.setEditingInterval(10, -1, "name");
                 expect(tab.dragboard.setCustomDragboardWidth).toHaveBeenCalledWith(10);
@@ -976,16 +1013,51 @@
                 tab.quitEditingInterval();
 
                 expect(tab.dragboard.restoreDragboardWidth).toHaveBeenCalled();
+            });
 
-                const intervalEditionIndicator = {
-                    remove: jasmine.createSpy("remove")
-                };
+        });
 
-                tab.intervalEditionIndicator = intervalEditionIndicator;
-                tab.quitEditingInterval();
+        describe("updateEditingIntervalName()", () => {
 
-                expect(intervalEditionIndicator.remove).toHaveBeenCalled();
-                expect(tab.intervalEditionIndicator).toBe(null);
+            it("should update the editing interval name", () => {
+                const workspace = create_workspace();
+                const model = create_tab({
+                    customPreferences: {
+                        screenSizes: [
+                            {id: 0, moreOrEqual: 0, lessOrEqual: 800, name: "Default"},
+                            {id: 1, moreOrEqual: 801, lessOrEqual: 1000, name: "Default-1"},
+                            {id: 2, moreOrEqual: 1001, lessOrEqual: -1, name: "Default-2"}
+                        ]
+                    }
+                });
+                const tab = new ns.WorkspaceTabView("1", notebook, {
+                    model: model,
+                    workspace: workspace
+                });
+
+                Object.defineProperty(window, 'innerWidth', {
+                    value: 800,
+                    writable: true
+                });
+
+                tab.dragboard.customWidth = -1;
+
+                tab.updateEditingIntervalName();
+                expect(tab.editingIntervalName).toBe("Default");
+
+                window.innerWidth = 900;
+                tab.updateEditingIntervalName();
+                expect(tab.editingIntervalName).toBe("Default-1");
+
+                window.innerWidth = 1001;
+                tab.updateEditingIntervalName();
+                expect(tab.editingIntervalName).toBe("Default-2");
+
+                tab.dragboard.customWidth = 10;
+                tab.updateEditingIntervalName();
+                expect(tab.editingIntervalName).toBe("Default");
+
+                window.innerWidth = 800;
             });
 
         });

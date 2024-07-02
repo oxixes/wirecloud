@@ -46,6 +46,10 @@
         if (this.addTabButton) {
             this.addTabButton.toggleClassName("hidden", !editing);
         }
+
+        if (this.editingIntervalAddon) {
+            this.editingIntervalAddon.toggleClassName("hidden", !editing);
+        }
     };
 
     const on_workspace_createoperator = function on_workspace_createoperator(workspace_model, operator) {
@@ -368,12 +372,24 @@
             this.notebook.removeTab(loadingTab);
 
             if (this.model.isAllowed('edit')) {
+                this.editingIntervalAddon = new StyledElements.Addon({
+                    class: 'wc-editing-interval',
+                    listeners: false
+                });
+                this.notebook.addToEastSection(this.editingIntervalAddon);
+                this.updateEditingInterval(this.activeTab.getEditingIntervalElement());
+
+                this.notebook.addEventListener('changed', (nt, oldTab, newTab) => {
+                    newTab.updateEditingIntervalName();
+                    this.updateEditingInterval(newTab.getEditingIntervalElement());
+                });
+
                 this.addTabButton = new StyledElements.Button({
                     title: utils.gettext("New tab"),
                     iconClass: "fas fa-plus",
                     class: "wc-create-workspace-tab"
                 });
-                this.notebook.addButton(this.addTabButton);
+                this.notebook.addToEastSection(this.addTabButton);
                 this.addTabButton.addEventListener('click', on_click_createtab.bind(this));
             } else {
                 this.addTabButton = null;
@@ -386,7 +402,7 @@
                     iconClass: 'fas fa-expand',
                     title: utils.gettext('Full screen')
                 });
-                this.notebook.addButton(this.fullscreenButton);
+                this.notebook.addToEastSection(this.fullscreenButton);
                 Wirecloud.Utils.onFullscreenChange(this.notebook, () => {
                     this.fullscreenButton.removeIconClassName(['fa-expand', 'fa-compress']);
                     if (this.notebook.fullscreen) {
@@ -412,7 +428,7 @@
                 this.seeOnWirecloudButton = new StyledElements.Button({
                     'class': 'powered-by-wirecloud'
                 });
-                this.notebook.addButton(this.seeOnWirecloudButton);
+                this.notebook.addToEastSection(this.seeOnWirecloudButton);
                 this.seeOnWirecloudButton.addEventListener('click', () => {
                     const url = Wirecloud.URLs.WORKSPACE_VIEW.evaluate({owner: encodeURIComponent(this.model.owner), name: encodeURIComponent(this.model.name)});
                     window.open(url, '_blank');
@@ -421,9 +437,9 @@
                 this.poweredByWirecloudButton = new StyledElements.Button({
                     'class': 'powered-by-wirecloud'
                 });
-                this.notebook.addButton(this.poweredByWirecloudButton);
+                this.notebook.addToEastSection(this.poweredByWirecloudButton);
                 this.poweredByWirecloudButton.addEventListener('click', () => {
-                    window.open('http://conwet.fi.upm.es/wirecloud/', '_blank');
+                    window.open('https://github.com/Wirecloud/wirecloud', '_blank');
                 });
             }
             showHideTabBar.call(this, false);
@@ -574,6 +590,16 @@
             }
 
             return this;
+        }
+
+        /**
+         * Update the editing interval addon's content with the given element.
+         */
+        updateEditingInterval(element) {
+            if (this.editingIntervalAddon) {
+                this.editingIntervalAddon.wrapperElement.innerHTML = "";
+                this.editingIntervalAddon.wrapperElement.appendChild(element);
+            }
         }
 
     }

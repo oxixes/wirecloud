@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WireCloud 1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-28 17:10+0200\n"
+"POT-Creation-Date: 2024-07-02 15:35+0200\n"
 "PO-Revision-Date: 2019-06-04 10:40+0200\n"
 "Last-Translator: Álvaro Arranz García <aarranz@ficodes.com>\n"
 "Language-Team: Español/España\n"
@@ -90,7 +90,7 @@ msgstr "Error HTTP %(errorCode)s - %(errorDesc)s"
 #: static/js/wirecloud/core.js:744
 #: static/js/wirecloud/ui/PublishResourceWindowMenu.js:104
 #: static/js/wirecloud/ui/WorkspaceTabViewDragboard.js:270
-#: static/js/wirecloud/ui/WorkspaceTabViewDragboard.js:423
+#: static/js/wirecloud/ui/WorkspaceTabViewDragboard.js:431
 msgid "Unexpected response from server"
 msgstr "Respuesta inesperada del servidor"
 
@@ -1341,7 +1341,7 @@ msgstr ""
 #: static/js/wirecloud/ui/MarketplaceView.js:179
 #: static/js/wirecloud/ui/MyResourcesView.js:148
 #: static/js/wirecloud/ui/MyResourcesView.js:166
-#: static/js/wirecloud/ui/WorkspaceView.js:177
+#: static/js/wirecloud/ui/WorkspaceView.js:181
 msgid "My Resources"
 msgstr "Mis recursos"
 
@@ -1442,7 +1442,7 @@ msgstr ""
 "botón Subir."
 
 #: static/js/wirecloud/ui/MyResourcesView.js:80
-#: static/js/wirecloud/ui/WorkspaceView.js:186
+#: static/js/wirecloud/ui/WorkspaceView.js:190
 msgid "Get more components"
 msgstr "Obtener más componentes"
 
@@ -1716,7 +1716,7 @@ msgstr ""
 #: static/js/wirecloud/ui/WiringEditor/Component.js:90
 #: static/js/wirecloud/ui/WiringEditor/ComponentDraggable.js:269
 #: static/js/wirecloud/ui/WiringEditor/Connection.js:330
-#: static/js/wirecloud/ui/WorkspaceTabView.js:220
+#: static/js/wirecloud/ui/WorkspaceTabView.js:238
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -1728,27 +1728,27 @@ msgstr "Variables persistentes"
 msgid "New Name"
 msgstr "Nuevo nombre"
 
-#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:178
+#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:191
 msgid "Name:"
 msgstr "Nombre:"
 
-#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:179
+#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:192
 msgid "Name of the screen size range."
 msgstr "Nombre del rango de tamaños de pantalla."
 
-#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:198
+#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:211
 msgid "From (px):"
 msgstr "Desde (px):"
 
-#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:199
+#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:212
 msgid "The left limit of the screen size range (in pixels)."
 msgstr "El límite izquierdo del rango de tamaños de pantalla (en píxeles)."
 
-#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:226
+#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:239
 msgid "To (px):"
 msgstr "Hasta (px):"
 
-#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:227
+#: static/js/wirecloud/ui/ScreenSizesInputInterface.js:240
 msgid ""
 "The right limit of the screen size range (in pixels). Use -1 for no limit."
 msgstr ""
@@ -2262,9 +2262,13 @@ msgstr "No se ha proporcionado una descripción."
 msgid "Empty workspace list"
 msgstr "Lista de entornos de trabajo vacía"
 
-#: static/js/wirecloud/ui/WorkspaceTabView.js:358
-msgid "Currently editing for screen size %(name)s"
-msgstr "Actualmente editando para los tamaños de pantalla %(name)s"
+#: static/js/wirecloud/ui/WorkspaceTabView.js:373
+msgid "(Overriden) Editing for screen size %(name)s"
+msgstr "(Sobrescrito) Editando para el tamaño de pantalla %(name)s"
+
+#: static/js/wirecloud/ui/WorkspaceTabView.js:375
+msgid "Editing for screen size %(name)s"
+msgstr "Editando para el tamaño de pantalla %(name)s"
 
 #: static/js/wirecloud/ui/WorkspaceTabViewMenuItems.js:49
 msgid "Rename Workspace Tab"
@@ -2278,33 +2282,33 @@ msgstr "Configurar como inicial"
 msgid "The tab's widgets will also be removed. Would you like to continue?"
 msgstr "Los widgets de la pestaña serán también eliminados. ¿Desea continuar?"
 
-#: static/js/wirecloud/ui/WorkspaceView.js:168
+#: static/js/wirecloud/ui/WorkspaceView.js:172
 msgid "Wiring"
 msgstr "Wiring"
 
-#: static/js/wirecloud/ui/WorkspaceView.js:372
+#: static/js/wirecloud/ui/WorkspaceView.js:388
 msgid "New tab"
 msgstr "Nueva pestaña"
 
-#: static/js/wirecloud/ui/WorkspaceView.js:387
-#: static/js/wirecloud/ui/WorkspaceView.js:398
+#: static/js/wirecloud/ui/WorkspaceView.js:403
+#: static/js/wirecloud/ui/WorkspaceView.js:414
 msgid "Full screen"
 msgstr "Ver a pantalla completa"
 
-#: static/js/wirecloud/ui/WorkspaceView.js:394
+#: static/js/wirecloud/ui/WorkspaceView.js:410
 msgid "Exit full screen"
 msgstr "Salir de pantalla completa"
 
-#: static/js/wirecloud/ui/WorkspaceView.js:434
+#: static/js/wirecloud/ui/WorkspaceView.js:450
 msgid "Add components"
 msgstr "Añadir componentes"
 
-#: static/js/wirecloud/ui/WorkspaceView.js:493
-#: static/js/wirecloud/ui/WorkspaceView.js:507
+#: static/js/wirecloud/ui/WorkspaceView.js:509
+#: static/js/wirecloud/ui/WorkspaceView.js:523
 msgid "loading..."
 msgstr "cargando..."
 
-#: static/js/wirecloud/ui/WorkspaceView.js:545
+#: static/js/wirecloud/ui/WorkspaceView.js:561
 msgid "The requested workspace is no longer available (it was deleted)."
 msgstr ""
 "El entorno de trabajo solicitado ya no está disponible (ha sido borrado)."

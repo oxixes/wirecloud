@@ -115,23 +115,16 @@
 }
 
 .wc-editing-interval {
-    background-color: #000;
-    opacity: 0.8;
-    position: fixed;
-    z-index: 101110;
-    color: #fff;
-    padding: 10px;
-    border-radius: 7px;
-    right: 50px;
-    top: 39px;
+    margin: 3px 5px;
 }
 
 .wc-editing-interval-close {
-    color: #fff;
+    color: #333;
     margin-left: 10px;
 }
 
 .wc-editing-interval-close:hover {
     cursor: pointer;
-    color: #fff;
+    color: #333;
+    text-decoration: none;
 }

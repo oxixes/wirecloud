@@ -1583,8 +1583,6 @@ class TemplateUtilsTestCase(TestCase):
         template = TemplateParser(template_contents)
         processed_info = template.get_resource_info()
 
-        print(json.dumps(processed_info, sort_keys=True, indent=4, ensure_ascii=False))
-
         self.check_full_mashup(processed_info, getattr(self, testname))
 
     def check_full_mashup(self, processed_info, expected_result):

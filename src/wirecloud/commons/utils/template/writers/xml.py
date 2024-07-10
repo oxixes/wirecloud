@@ -78,7 +78,6 @@ def addPreferenceValues(resource, preferences):
         addAttribute(pref, element, 'value', type='string', default=None, required=False)
         addAttributes(pref, element, ('readonly', 'hidden'), default='false', type='boolean')
 
-# TODO Adrian handle multiple screen sizes
 def write_mashup_tree(doc, resources, options):
 
     # Params

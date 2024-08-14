@@ -239,7 +239,7 @@
                 if (screenSize.lessOrEqual === -1) {
                     size = screenSize.moreOrEqual;
                 }
-                this.updateWidgetScreenSize(screenSize.width);
+                this.updateWidgetScreenSize(size);
             }
         }
 

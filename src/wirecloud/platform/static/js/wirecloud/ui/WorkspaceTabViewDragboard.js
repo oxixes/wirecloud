@@ -232,6 +232,17 @@
             this.paint();
         }
 
+        updateWidgetScreenSizeWithId(id) {
+            const screenSize = this.tab.model.preferences.get('screenSizes').find((screenSize) => screenSize.id === id);
+            if (screenSize != null) {
+                let size = screenSize.moreOrEqual + (screenSize.lessOrEqual - screenSize.moreOrEqual) / 2;
+                if (screenSize.lessOrEqual === -1) {
+                    size = screenSize.moreOrEqual;
+                }
+                this.updateWidgetScreenSize(screenSize.width);
+            }
+        }
+
         /**
          *
          */

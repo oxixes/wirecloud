@@ -26,13 +26,13 @@
 
     "use strict";
 
-    const create_tab = function () {
+    const create_tab = function (customPreferences = null) {
         return {
             appendChild: jasmine.createSpy("appendChild"),
             model: {
                 id: 3,
                 preferences: {
-                    get: jasmine.createSpy("get").and.returnValue({
+                    get: jasmine.createSpy("get").and.returnValue(customPreferences || {
                         "type": "gridlayout",
                         "columns": 20
                     })
@@ -867,6 +867,26 @@
                     }
                 );
 
+            });
+
+        });
+
+        describe("updateWidgetScreenSizeWithId", () => {
+
+            it("should update the screen size of the widget with the given id", () => {
+                const tab = create_tab([
+                    {
+                        "id": 1,
+                        "moreOrEqual": 0,
+                        "lessOrEqual": 800
+                    }
+                ]);
+                const dragboard = new ns.WorkspaceTabViewDragboard(tab);
+                dragboard.updateWidgetScreenSize = jasmine.createSpy("updateWidgetScreenSize");
+
+                dragboard.updateWidgetScreenSizeWithId(1);
+
+                expect(dragboard.updateWidgetScreenSize).toHaveBeenCalledWith(400);
             });
 
         });

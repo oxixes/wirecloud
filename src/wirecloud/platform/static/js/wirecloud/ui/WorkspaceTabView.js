@@ -285,21 +285,24 @@
             }, options);
 
             layoutConfigs.forEach((layoutConfig) => {
-
                 Wirecloud.Utils.merge(layoutConfig, {
-                    action: 'update',
                     width: resource.default_width,
                     anchor: 'top-left',
                     relx: true,
                     rely: false,
                     relwidth: true,
                     relheight: false,
+                    titlevisible: true,
                     height: resource.default_height
                 });
 
                 let avgScreenSize = layoutConfig.lessOrEqual + (layoutConfig.moreOrEqual - layoutConfig.lessOrEqual) / 2;
                 if (layoutConfig.lessOrEqual === -1) {
                     avgScreenSize = layoutConfig.moreOrEqual;
+                }
+
+                if (layoutConfig.length === 0) {
+                    avgScreenSize = window.innerWidth;
                 }
 
                 if (window.innerWidth >= layoutConfig.moreOrEqual && (layoutConfig.lessOrEqual === -1 || window.innerWidth <= layoutConfig.lessOrEqual)) {
@@ -341,7 +344,7 @@
 
                 if (layoutConfig.left == null || layoutConfig.top == null) {
                     if (options.refposition && "searchBestPosition" in layout) {
-                        layout.searchBestPosition(layoutConfig, avgScreenSize);
+                        layout.searchBestPosition(options, layoutConfig, avgScreenSize);
                     } else if ("_searchFreeSpace2" in layout) {
                         const matrix = Wirecloud.Utils.getLayoutMatrix(layout, layout.dragboard.widgets, avgScreenSize);
                         const position = layout._searchFreeSpace2(layoutConfig.width, layoutConfig.height, matrix);

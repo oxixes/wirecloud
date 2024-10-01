@@ -463,8 +463,7 @@
                     minimized: false,
                     fulldragboard: false,
                     titlevisible: true
-                }],
-                titlevisible: true
+                }]
             }, data);
 
             this.pending_events = [];

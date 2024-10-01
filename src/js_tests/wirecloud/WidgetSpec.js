@@ -2310,6 +2310,13 @@
 
             it("should update the widget information accordingly", () => {
 
+                // Force window size to 800
+                Object.defineProperty(window, 'innerWidth', {
+                    writable: true,
+                    configurable: true,
+                    value: 750
+                });
+
                 const widget = new Wirecloud.Widget(WORKSPACE_TAB, EMPTY_WIDGET_META, {
                     id: "1",
                     layoutConfigurations: WIDGET_LAYOUT_CONFIGS

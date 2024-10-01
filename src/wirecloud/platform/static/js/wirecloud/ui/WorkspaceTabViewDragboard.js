@@ -394,7 +394,6 @@
                         let requiresUpdate = false;
                         const updatedConfig = {
                             id: screenSize.id,
-                            action: 'update'
                         };
 
                         if (currentConfig.moreOrEqual !== screenSize.moreOrEqual) {
@@ -408,6 +407,7 @@
                         }
 
                         if (requiresUpdate) {
+                            updatedConfig.action = 'update';
                             widgetReqData.layoutConfigurations.push(updatedConfig);
                         }
                     }

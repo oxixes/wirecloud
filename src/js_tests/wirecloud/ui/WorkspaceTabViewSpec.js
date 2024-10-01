@@ -629,9 +629,9 @@
                 p.then((created_widget) => {
                     expect(created_widget).toBe(widget);
                     expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledTimes(3);
-                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), 800);
-                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), 900.5);
-                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), 1001);
+                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), 800);
+                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), 900.5);
+                    expect(tab.dragboard.freeLayout.searchBestPosition).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), 1001);
                     done();
                 });
             });

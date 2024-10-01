@@ -27,7 +27,7 @@
 
     "use strict";
 
-    const setPosition = function setPosition(position, options, offset, screenWidth) {
+    const setPosition = function setPosition(position, layoutConfig, offset, screenWidth, options) {
         delete options.left;
         delete options.top;
         delete options.right;
@@ -35,20 +35,20 @@
 
         switch (position) {
         case "top-right":
-            options.left = offset.x + options.refposition.left - this.dragboard.leftMargin;
-            options.top = offset.y + options.refposition.top - this.dragboard.topMargin - options.height;
+            layoutConfig.left = offset.x + options.refposition.left - this.dragboard.leftMargin;
+            layoutConfig.top = offset.y + options.refposition.top - this.dragboard.topMargin - layoutConfig.height;
             break;
         case "top-left":
-            options.left = offset.x + options.refposition.right - this.dragboard.leftMargin - this.getWidthInPixels(options.width, screenWidth);
-            options.top = offset.y + options.refposition.top - this.dragboard.topMargin - options.height;
+            layoutConfig.left = offset.x + options.refposition.right - this.dragboard.leftMargin - this.getWidthInPixels(layoutConfig.width, screenWidth);
+            layoutConfig.top = offset.y + options.refposition.top - this.dragboard.topMargin - layoutConfig.height;
             break;
         case "bottom-right":
-            options.left = offset.x + options.refposition.left - this.dragboard.leftMargin;
-            options.top = offset.y + options.refposition.bottom - this.dragboard.topMargin;
+            layoutConfig.left = offset.x + options.refposition.left - this.dragboard.leftMargin;
+            layoutConfig.top = offset.y + options.refposition.bottom - this.dragboard.topMargin;
             break;
         case "bottom-left":
-            options.left = offset.x + options.refposition.right - this.dragboard.leftMargin - this.getWidthInPixels(options.width, screenWidth);
-            options.top = offset.y + options.refposition.bottom - this.dragboard.topMargin;
+            layoutConfig.left = offset.x + options.refposition.right - this.dragboard.leftMargin - this.getWidthInPixels(layoutConfig.width, screenWidth);
+            layoutConfig.top = offset.y + options.refposition.bottom - this.dragboard.topMargin;
             break;
         }
     };
@@ -410,7 +410,7 @@
             this.newPosition = null;
         }
 
-        searchBestPosition(options, screenWidth) {
+        searchBestPosition(options, layoutConfig, screenWidth) {
             let offset = {x: 0, y: 0};
             if (options.refiframe != null) {
                 offset = Wirecloud.Utils.getRelativePosition(options.refiframe, this.dragboard.tab.wrapperElement);
@@ -421,8 +421,8 @@
             const placements = ["bottom-right", "bottom-left", "top-right", "top-left"];
             let i = 0;
             do {
-                setPosition.call(this, placements[i], options, offset, screenWidth);
-                weights.push(standsOut.call(this, options, screenWidth));
+                setPosition.call(this, placements[i], layoutConfig, offset, screenWidth, options);
+                weights.push(standsOut.call(this, layoutConfig, screenWidth));
                 i += 1;
             } while (weights[i - 1] > 0 && i < placements.length);
 
@@ -430,17 +430,17 @@
                 const best_weight = Math.min.apply(Math, weights);
                 const index = weights.indexOf(best_weight);
                 const placement = placements[index];
-                setPosition.call(this, placement, options, offset, screenWidth);
+                setPosition.call(this, placement, layoutConfig, offset, screenWidth, options);
 
-                options.top = this.adaptRowOffset(options.top + "px").inPixels;
-                options.left = this.adaptColumnOffset(options.left + "px", screenWidth).inLU;
+                layoutConfig.top = this.adaptRowOffset(layoutConfig.top + "px").inPixels;
+                layoutConfig.left = this.adaptColumnOffset(layoutConfig.left + "px", screenWidth).inLU;
 
-                if (options.left + options.width >= this.MAX_HLU) {
-                    options.width -= options.left + options.width - this.MAX_HLU;
+                if (layoutConfig.left + layoutConfig.width >= this.MAX_HLU) {
+                    layoutConfig.width -= layoutConfig.left + layoutConfig.width - this.MAX_HLU;
                 }
             } else {
-                options.top = this.adaptRowOffset(options.top + "px").inPixels;
-                options.left = this.adaptColumnOffset(options.left + "px", screenWidth).inLU;
+                layoutConfig.top = this.adaptRowOffset(layoutConfig.top + "px").inPixels;
+                layoutConfig.left = this.adaptColumnOffset(layoutConfig.left + "px", screenWidth).inLU;
             }
         }
 

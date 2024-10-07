@@ -171,6 +171,11 @@ class Proxy():
         else:
             request_data['headers']['via'] = via_header
 
+        ### THIS IS A TEMPORARY FIX FOR THE SCORPIO CONTEXT BROKER, WHICH DOES NOT ACCEPT A VALID VIA HEADER ###
+        if request_data['headers']['via'].startswith('1.'):
+            request_data['headers']['via'] = 'HTTP' + request_data['headers']['via']
+        ### END OF TEMPORARY FIX ###
+
         # XFF headers
         if 'x-forwarded-for' in request_data['headers']:
             request_data['headers']['x-forwarded-for'] += ', ' + request.META['REMOTE_ADDR']

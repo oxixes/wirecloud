@@ -173,7 +173,7 @@ class Proxy():
 
         ### THIS IS A TEMPORARY FIX FOR THE SCORPIO CONTEXT BROKER, WHICH DOES NOT ACCEPT A VALID VIA HEADER ###
         if request_data['headers']['via'].startswith('1.'):
-            request_data['headers']['via'] = 'HTTP' + request_data['headers']['via']
+            request_data['headers']['via'] = 'HTTP/' + request_data['headers']['via']
         ### END OF TEMPORARY FIX ###
 
         # XFF headers

@@ -286,14 +286,14 @@
 
             layoutConfigs.forEach((layoutConfig) => {
                 Wirecloud.Utils.merge(layoutConfig, {
-                    width: resource.default_width,
-                    anchor: 'top-left',
-                    relx: true,
-                    rely: false,
-                    relwidth: true,
-                    relheight: false,
-                    titlevisible: true,
-                    height: resource.default_height
+                    width: ('width' in options) ? options.width : resource.default_width,
+                    anchor: ('anchor' in options) ? options.anchor : 'top-left',
+                    relx: ('relx' in options) ? options.relx : true,
+                    rely: ('rely' in options) ? options.rely : false,
+                    relwidth: ('relwidth' in options) ? options.relwidth : true,
+                    relheight: ('relheight' in options) ? options.relheight : false,
+                    titlevisible: ('titlevisible' in options) ? options.titlevisible : true,
+                    height: ('height' in options) ? options.height : resource.default_height
                 });
 
                 let avgScreenSize = layoutConfig.lessOrEqual + (layoutConfig.moreOrEqual - layoutConfig.lessOrEqual) / 2;

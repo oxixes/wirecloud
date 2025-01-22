@@ -87,6 +87,10 @@
     const on_workspace_unload = function on_workspace_unload(workspace) {
         // This must be always the case
         // if (this.model === workspace) {
+        this.model.operators.forEach((operator) => {
+            operator.unload(true);
+        });
+
         this.model = null;
         this.editButton.enabled = false;
         this.editButton.active = false;

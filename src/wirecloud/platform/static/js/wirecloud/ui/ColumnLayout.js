@@ -340,6 +340,10 @@
         _reserveSpace2(matrix, widget, positionX, positionY, width, height) {
             for (let x = 0; x < width; x++) {
                 for (let y = 0; y < height; y++) {
+                    if (!((positionX + x) in matrix)) {
+                        matrix[positionX + x] = [];
+                    }
+
                     matrix[positionX + x][positionY + y] = widget;
                 }
             }

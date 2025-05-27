@@ -43,6 +43,12 @@
         this.walletButton.enabled = editing && this.model.isAllowed('edit');
         this.wiringButton.enabled = editing && this.model.isAllowed('edit');
         this.notebook.tabWrapper.toggleClassName("hidden", !(editing || this.tabs.length > 1));
+        this.notebook.tabs.forEach((tab) => {
+            if (tab.dragboard) {
+                tab.dragboard._notifyWindowResizeEvent();
+            }
+        });
+
         if (this.addTabButton) {
             this.addTabButton.toggleClassName("hidden", !editing);
         }

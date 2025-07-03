@@ -1,11 +1,4 @@
 services:
-  elasticsearch:
-    image: elasticsearch:2.4
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    command: elasticsearch -Des.index.max_result_window=50000
-    restart: always
-
   memcached:
     image: memcached:1
     command: memcached -m 2048m
@@ -32,7 +25,6 @@ services:
   wirecloud:
     image: oxixes/wirecloud:terrassa-demo
     depends_on:
-      - elasticsearch
       - memcached
       - postgres
     volumes:
@@ -45,7 +37,6 @@ services:
       - DB_HOST=postgres
       - DB_PASSWORD=wirepass # Change this password!
       - FORWARDED_ALLOW_IPS=*
-      - ELASTICSEARCH2_URL=http://elasticsearch:9200/
       - MEMCACHED_LOCATION=memcached:11211
       # Uncomment the following environment variables to enable FIWARE IDM integration
       #- FIWARE_IDM_SERVER=${FIWARE_IDM_SERVER}
@@ -61,7 +52,6 @@ services:
     restart: always
 
 volumes:
-  elasticsearch-data:
   postgres-data:
   wirecloud-data:
   wirecloud-static:

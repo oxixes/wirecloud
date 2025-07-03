@@ -11,7 +11,7 @@ services:
     restart: always
 
   wirecloud:
-    image: fiware/wirecloud:latest
+    image: oxixes/wirecloud:terrassa-demo
     volumes:
       - wirecloud-data:/opt/wirecloud_instance/data
       - wirecloud-static:/var/www/static

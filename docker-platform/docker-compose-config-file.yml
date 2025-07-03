@@ -30,7 +30,7 @@ services:
     restart: always
 
   wirecloud:
-    image: fiware/wirecloud:latest
+    image: oxixes/wirecloud:terrassa-demo
     depends_on:
       - elasticsearch
       - memcached

@@ -43,10 +43,13 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Mount the wheel file from the builder stage
 RUN --mount=type=bind,from=builder,source=/wirecloud/src/dist/,target=/dist/ \
     --mount=type=cache,target=/root/.cache/pip,sharing=locked \
-    pip install /dist/*.whl \ 
+    pip install /dist/*.whl \
     social-auth-app-django "gunicorn==21.2" "psycopg2==2.8.6" pylibmc pysolr "elasticsearch==2.4.1" \
     "regex==2019.02.18" "channels<2.3" "channels-redis" "wirecloud-keycloak>=0.3.0" "whitenoise" && \
     pip uninstall selenium -y
+
+# Patch social_auth_backend.py to use the correct OIDC endpoint
+RUN sed -i "s|KEYCLOAK_OIDC_ENDPOINT = 'auth/realms/{}'|KEYCLOAK_OIDC_ENDPOINT = 'realms/{}'|g" /usr/local/lib/python3.10/site-packages/wirecloud/keycloak/social_auth_backend.py
 
 RUN adduser --system --group --shell /bin/bash wirecloud && \
     mkdir -p /opt/wirecloud_instance /var/www/static

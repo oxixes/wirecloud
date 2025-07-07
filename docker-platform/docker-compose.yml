@@ -1,8 +1,4 @@
 services:
-  memcached:
-    image: memcached:1
-    command: memcached -m 2048m
-    restart: always
   nginx:
     image: nginx:latest
     depends_on:
@@ -25,7 +21,6 @@ services:
   wirecloud:
     image: oxixes/wirecloud:terrassa-demo
     depends_on:
-      - memcached
       - postgres
     volumes:
       - wirecloud-data:/opt/wirecloud_instance/data
@@ -37,7 +32,6 @@ services:
       - DB_HOST=postgres
       - DB_PASSWORD=wirepass # Change this password!
       - FORWARDED_ALLOW_IPS=*
-      - MEMCACHED_LOCATION=memcached:11211
       # Uncomment the following environment variables to enable FIWARE IDM integration
       #- FIWARE_IDM_SERVER=${FIWARE_IDM_SERVER}
       #- SOCIAL_AUTH_FIWARE_KEY=${SOCIAL_AUTH_FIWARE_KEY}

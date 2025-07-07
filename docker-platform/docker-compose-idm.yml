@@ -14,11 +14,6 @@ services:
       - '3000:3000'
     restart: always
 
-  memcached:
-    image: memcached:1
-    command: memcached -m 2048m
-    restart: always
-
   mysql:
     image: mysql/mysql-server:5.7.21
     environment:
@@ -48,7 +43,6 @@ services:
     image: oxixes/wirecloud:terrassa-demo
     depends_on:
       - elasticsearch
-      - memcached
       - postgres
     volumes:
       - wirecloud-data:/opt/wirecloud_instance/data
@@ -60,7 +54,6 @@ services:
       - DB_PASSWORD=wirepass # Change this password!
       - FORWARDED_ALLOW_IPS=*
       - ELASTICSEARCH2_URL=http://elasticsearch:9200/
-      - MEMCACHED_LOCATION=memcached:11211
       - FIWARE_IDM_SERVER=${FIWARE_IDM_SERVER}
       - SOCIAL_AUTH_FIWARE_KEY=${SOCIAL_AUTH_FIWARE_KEY}
       - SOCIAL_AUTH_FIWARE_SECRET=${SOCIAL_AUTH_FIWARE_SECRET}

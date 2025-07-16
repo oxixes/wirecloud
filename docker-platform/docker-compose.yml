@@ -33,12 +33,7 @@ services:
       - DB_PASSWORD=wirepass # Change this password!
       - FORWARDED_ALLOW_IPS=*
       - WIRECLOUD_HTTPS_VERIFY=false
-      # Uncomment the following environment variables to enable FIWARE IDM integration
-      #- FIWARE_IDM_SERVER=${FIWARE_IDM_SERVER}
-      #- SOCIAL_AUTH_FIWARE_KEY=${SOCIAL_AUTH_FIWARE_KEY}
-      #- SOCIAL_AUTH_FIWARE_SECRET=${SOCIAL_AUTH_FIWARE_SECRET}
       # Uncomment the following environment variables to enable Keycloak IDM Integration
-      #- KEYCLOAK_GLOBAL_ROLE=${KEYCLOAK_GLOBAL_ROLE}
       # - SOCIAL_AUTH_KEYCLOAK_OIDC_URL=http://keycloak.orb.local:8080
       # - SOCIAL_AUTH_KEYCLOAK_OIDC_REALM=wirecloud
       # - SOCIAL_AUTH_KEYCLOAK_OIDC_KEY=terrassa_demo
